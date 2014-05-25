@@ -298,7 +298,39 @@ class ConfigModule extends Module {
     <div class="row">
       <div class="col-md-12">
         <h2>Getting Started</h2>
-        <p>TODO</p>
+        <p>Just include this library dependency and you are ready to go:</p>
+        <p>
+{% highlight scala %}
+libraryDependencies += "org.scaldi" %% "scaldi" % "{{site.version.scaldi}}"
+{% endhighlight %}
+        </p>
+        <p>If you want to include scaldi into the play application, then <span class="class-name">scaldi-play</span> would probably be more suitable for you</p>
+        <p>
+          {% highlight scala %}
+          libraryDependencies += "org.scaldi" %% "scaldi-play" % "{{site.version.scaldi-play}}"
+          {% endhighlight %}
+        </p>
+        <p>Then you can just extend <span class="class-name">ScaldiSupport</span> in the <span class="class-name">Global</span> like this:</p>
+        <p>
+{% highlight scala %}
+object Global extends GlobalSettings with ScaldiSupport {
+  def applicationModule = new MyModule :: new SomeOtherModule
+}
+{% endhighlight %}
+        </p>
+        <p>For the akka applications, <span class="class-name">scaldi-akka</span> is the way to go:</p>
+        <p>
+{% highlight scala %}
+libraryDependencies += "org.scaldi" %% "scaldi-akka" % "{{site.version.scaldi-akka}}"
+{% endhighlight %}
+        </p>
+        <br>
+        <p>After the initial setup you can read <a href="#">some documentation</a> or <a href="#">watch scaldi presentation slides</a>.</p>
+        <p>If you prefer more hands-on approach, then you may be interested in two example projects which you can play with:</p>
+        <ul>
+          <li>Scaldi Play Example (<a href="#">GitHub</a>, <a href="#">Typesafe activator template</a>)</li>
+          <li>Scaldi Akka Example (<a href="#">GitHub</a>, <a href="#">Typesafe activator template</a>)</li>
+        </ul>
       </div>
     </div>
   </div>

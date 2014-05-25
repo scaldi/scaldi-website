@@ -4,6 +4,11 @@ baseurl: ""
 url: "http://scaldi.org"
 theme: flatly
 
+version:
+  scaldi: 0.3.2
+  scaldi-play: 0.3.3
+  scaldi-akka: 0.3.3
+
 markdown: kramdown
 permalink: pretty
 
