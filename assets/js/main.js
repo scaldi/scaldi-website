@@ -17,4 +17,26 @@ $(function () {
 
     $(document).scroll(headerShow)
     $(document).resize(headerShow)
+
+    var slagify = function (text) {
+        return text.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-')
+    }
+
+    $("h2").each(function () {
+        var me = $(this)
+        var text = me.text()
+        var slug = slagify(me.text())
+
+        var html = me.append('<a id="' + slug + '" href="#" class="a-link"></a>').html()
+
+//        me.attr('id', slug)
+
+        me.mouseenter(function () {
+            me.append('<a class="link-link" href="#' + slug + '"><span class="glyphicon glyphicon-link"></span></a>')
+        })
+
+        me.mouseleave(function () {
+            me.html(html)
+        })
+    })
 })
