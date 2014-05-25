@@ -186,3 +186,7 @@ pre code {
     max-width:100%;
     max-height:100%;
 }
+
+.class-name {
+    font-weight: bold;
+}

@@ -7,17 +7,16 @@ layout: default
   <div class="container">
     <h1>Scal<span class="di">di</span></h1>
     <p>Lightweight Scala Dependency Injection Library</p>
-    <p class="top-description">Scala already have everything you need for dependency injection. But still some things can be made easier. Goal of the project is to provide more standard and easy way to make dependency injection in Scala projects consuming power of the Scala language. With Scaldi you can define your application modules in pure Scala without any annotations or XML.</p>
+    <p class="top-description">TODO: Scala already have everything you need for dependency injection. But still some things can be made easier. Goal of the project is to provide more standard and easy way to make dependency injection in Scala projects consuming power of the Scala language. With Scaldi you can define your application modules in pure Scala without any annotations or XML.</p>
   </div>
 </div>
 
 <section>
   <div class="container">
-    <!-- Example row of columns -->
     <div class="row">
       <div class="col-md-4">
         <h2>Discover</h2>
-        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p>TODO Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
         <a class="btn btn-success btn-lg main-button" role="button">
           <i class="fa fa-graduation-cap fa-2x top-icon"></i>
           <span>Learn</span>
@@ -25,7 +24,7 @@ layout: default
       </div>
       <div class="col-md-4">
         <h2>Discuss</h2>
-        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+        <p>TODO Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
         <p>
           <a class="btn btn-success btn-lg main-button" role="button">
             <i class="fa fa-comments-o fa-2x top-icon"></i>
@@ -36,7 +35,7 @@ layout: default
 
       <div class="col-md-4">
         <h2>Contribute</h2>
-        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p>TODO Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
         <p>
           <a class="btn btn-success btn-lg main-button" role="button">
             <i class="fa fa-github fa-2x top-icon"></i>
@@ -54,42 +53,46 @@ layout: default
       <div class="col-md-12">
         <h2>Getting a Taste of Scaldi</h2>
       </div>
-      <div class="col-md-10 col-md-offset-1">
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Define Bindings</h3>
+        <p>Scaldi provides nice DSL for defining the bindings</p>
         <p>
 {% highlight scala %}
-class AppModule extends Module {
-  bind [Printer] to new StreamPrinter
-  bind [PrintStream] to Console.out
-}
+class UserModule extends Module {
+  bind [MessageService] to new OfficialMessageService
 
-class ConfigModule extends Module {
-  binding identifiedBy "userName" to "Bob"
-  binding identifiedBy "prefix" and "console" to "Howdy, "
-}
-
-object MyApp extends App with Injectable {
-  implicit val modules = new AppModule :: new ConfigModule
-
-  val printer = inject [Printer]
-
-  printer print "Welcome!"
-}
-
-trait Printer {
-  def print(str: String): Unit
-}
-
-class StreamPrinter(implicit inj: Injector) extends Printer with Injectable {
-  val userName = inject [String] (identified by "userName" and by default "Anonimous")
-  val prefix = inject [String] ("console" and "prefix" and by default "Hello, ")
-  val writer = inject [PrintStream] (by default Console.err)
-
-  def print(str: String) {
-    writer.println(prefix + userName + " - " + str)
-  }
+  binding identifiedBy "greeting.official" to "Welcome"
 }
 {% endhighlight %}
         </p>
+        <a class="btn btn-success btn-sm" role="button">
+          <i class="fa fa-info-circle fa-lg top-icon"></i>
+          <span>Learn about bindings</span>
+        </a>
+      </div>
+      <div class="col-md-6">
+        <h3>Inject Bindings</h3>
+        <p>With neat DSL for for injecting them</p>
+        <p>
+{% highlight scala %}
+class OfficialMessageService(implicit inj: Injector)
+          extends MessageService with Injectable {
+
+  val officialGreeting =
+    inject [String] (identified by "greeting.official")
+
+  def getGreetMessage(name: String) =
+    s"$officialGreeting, $name!"
+}
+{% endhighlight %}
+        </p>
+        <a class="btn btn-success btn-sm" role="button">
+          <i class="fa fa-info-circle fa-lg top-icon"></i>
+          <span>Learn about injection</span>
+        </a>
       </div>
     </div>
   </div>
@@ -125,43 +128,139 @@ class ConfigModule extends Module {
 <section>
   <div class="container">
     <div class="row">
+      <div class="col-md-12">
+        <h2>Features</h2>
+      </div>
+    </div>
+
+    <div class="row">
       <div class="col-md-6">
-        <h2>Define Bindings</h2>
-        <p>Scaldi provides nice DSL for defining the bindings</p>
+        <h3>Injector Composition</h3>
+        <p>You can easily split bindings between different modules and then compose them together</p>
         <p>
 {% highlight scala %}
-class UserModule extends Module {
-  bind [MessageService] to new OfficialMessageService
-
-  binding identifiedBy "greeting.official" to "Welcome"
+def tokenModule = new Module {
+  bind [Tokens] to new TokenRepo(db = inject [Database])
 }
+
+def dbModule = new Module {
+  bind [Database] to new Riak
+}
+
+def appModule = tokenModule :: dbModule
 {% endhighlight %}
         </p>
         <a class="btn btn-success btn-sm" role="button">
           <i class="fa fa-info-circle fa-lg top-icon"></i>
-          <span>Learn about bindings</span>
+          <span>Learn about composition</span>
         </a>
       </div>
       <div class="col-md-6">
-        <h2>Inject Bindings</h2>
-        <p>With neat DSL for for injecting them</p>
+        <h3>Testing</h3>
+        <p>You can override bindings in order to mock parts of the application</p>
         <p>
 {% highlight scala %}
-class OfficialMessageService(implicit inj: Injector)
-          extends MessageService with Injectable {
+def mocksModule = new Module {
+  bind [Database] to new InMemoryDb
+}
 
-  val officialGreeting =
-    inject [String] (identified by "greeting.official")
+implicit val testModule = mocksModule :: appModule
+{% endhighlight %}
+        </p>
+        <a class="btn btn-success btn-sm" role="button">
+          <i class="fa fa-info-circle fa-lg top-icon"></i>
+          <span>Learn about testing</span>
+        </a>
+      </div>
+    </div>
 
-  def getGreetMessage(name: String) =
-    s"$officialGreeting, $name!"
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Generics</h3>
+        <p>You can bind things like functions, lists or maps</p>
+        <p>
+{% highlight scala %}
+binding identifiedBy "intAdder" to
+  ((a: Int, b: Int) => a + b)
+
+binding identifiedBy "mapping" to Map(
+  "scala" -> "http://scala-lang.org",
+  "play" -> "http://www.playframework.com",
+  "akka" -> "http://akka.io"
+)
+{% endhighlight %}
+        </p>
+        <p>and then inject them</p>
+        <p>
+{% highlight scala %}
+val intAdder = inject [(Int, Int) => Int]
+val mapping = inject [Map[String, String]]
+{% endhighlight %}
+        </p>
+      </div>
+      <div class="col-md-6">
+        <h3>Conditions</h3>
+        <p>Bindings may have conditions associated with them</p>
+        <p>
+{% highlight scala %}
+class UserModule extends Module {
+  bind [MessageService] when (inDevMode or inTestMode) to
+    new SimpleMessageService
+
+  bind [MessageService] when inProdMode to
+    new OfficialMessageService
+}
+{% endhighlight %}
+        </p>
+        <p>and it's pretty straightforward to define new conditions</p>
+        <p>
+{% highlight scala %}
+def inDevMode(implicit inj: Injector) = {
+  val mode = inject [Mode]
+  Condition(mode == Dev)
 }
 {% endhighlight %}
         </p>
         <a class="btn btn-success btn-sm" role="button">
           <i class="fa fa-info-circle fa-lg top-icon"></i>
-          <span>Learn about injection</span>
+          <span>Learn about conditions</span>
         </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Binding Lifecycle</h3>
+        <p>Bindings may have lifecycle</p>
+        <p>
+{% highlight scala %}
+class MyModule extends Module {
+  bind [ActorSystem] to
+    ActorSystem("ScaldiExample") destroyWith (_.shutdown())
+
+  bind [Database] to new Mongo initWith (_.start())
+}
+{% endhighlight %}
+        </p>
+        <a class="btn btn-success btn-sm" role="button">
+          <i class="fa fa-info-circle fa-lg top-icon"></i>
+          <span>Learn about lifecycle</span>
+        </a>
+      </div>
+      <div class="col-md-6">
+        <h3>Extensibility</h3>
+        <p>Extend almost any part of the library, including</p>
+        <ul>
+          <li><span class="class-name">Injector</span></li>
+          <li><span class="class-name">Condition</span></li>
+          <li><span class="class-name">Binding</span> and <span class="class-name">BindingWithLifecycle</span></li>
+          <li><span class="class-name">Identifier</span> - create your own and define how they match</li>
+        </ul>
+        <p>Some parts of the library are implemented a type classes</p>
+        <ul>
+          <li><span class="class-name">CanCompose</span> - defines how <span class="class-name">Injector</span>s can be composed together</li>
+          <li><span class="class-name">CanBeIdentifier</span></li>
+        </ul>
       </div>
     </div>
   </div>
@@ -174,7 +273,7 @@ class OfficialMessageService(implicit inj: Injector)
         <h2>Akka Integration</h2>
         <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
         <p>
-          {% highlight scala %}
+{% highlight scala %}
 class AppModule extends Module {
   bind [Printer] to new StreamPrinter
   bind [PrintStream] to Console.out
@@ -196,25 +295,11 @@ class ConfigModule extends Module {
 
 <section>
   <div class="container">
-    <!-- Example row of columns -->
     <div class="row">
-      <div class="col-md-4">
-        <h2>Heading</h2>
-        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-      </div>
-      <div class="col-md-4">
-        <h2>Heading</h2>
-        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-      </div>
-      <div class="col-md-4">
-        <h2>Heading</h2>
-        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+      <div class="col-md-12">
+        <h2>Getting Started</h2>
+        <p>TODO</p>
       </div>
     </div>
   </div>
 </section>
-
-
