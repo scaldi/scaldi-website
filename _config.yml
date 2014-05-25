@@ -1,0 +1,13 @@
+title: Scaldi
+description: "Scaldi - Lightweight Dependency Injection Library"
+baseurl: ""
+url: "http://scaldi.org"
+theme: flatly
+
+markdown: kramdown
+permalink: pretty
+
+gems:
+- jekyll-mentions
+- jekyll-redirect-from
+- jekyll-sitemap

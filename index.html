@@ -1,0 +1,198 @@
+---
+layout: default
+---
+
+<div class="jumbotron">
+  <div class="main-spacer visible-xs"></div>
+  <div class="container">
+    <h1>Scal<span class="di">di</span></h1>
+    <p>Lightweight Scala Dependency Injection Library</p>
+    <p class="top-description">Scala already have everything you need for dependency injection. But still some things can be made easier. Goal of the project is to provide more standard and easy way to make dependency injection in Scala projects consuming power of the Scala language. With Scaldi you can define your application modules in pure Scala without any annotations or XML.</p>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Discover</h2>
+        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <a class="btn btn-success btn-lg main-button" role="button">
+          <i class="fa fa-graduation-cap fa-2x top-icon"></i>
+          <span>Learn</span>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <h2>Ask</h2>
+        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+        <p>
+          <a class="btn btn-success btn-lg main-button" role="button">
+            <i class="fa fa-paper-plane fa-2x top-icon"></i>
+            <span>Feedback</span>
+          </a>
+        </p>
+      </div>
+
+      <div class="col-md-4">
+        <h2>Contribute</h2>
+        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p>
+          <a class="btn btn-success btn-lg main-button" role="button">
+            <i class="fa fa-github fa-2x top-icon"></i>
+            <span>Fork</span>
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Getting a Taste of Scaldi</h2>
+      </div>
+      <div class="col-md-10 col-md-offset-1">
+        <p>
+{% highlight scala %}
+class AppModule extends Module {
+  bind [Printer] to new StreamPrinter
+  bind [PrintStream] to Console.out
+}
+
+class ConfigModule extends Module {
+  binding identifiedBy "userName" to "Bob"
+  binding identifiedBy "prefix" and "console" to "Howdy, "
+}
+
+object MyApp extends App with Injectable {
+  implicit val modules = new AppModule :: new ConfigModule
+
+  val printer = inject [Printer]
+
+  printer print "Welcome!"
+}
+
+trait Printer {
+  def print(str: String): Unit
+}
+
+class StreamPrinter(implicit inj: Injector) extends Printer with Injectable {
+  val userName = inject [String] (identified by "userName" and by default "Anonimous")
+  val prefix = inject [String] ("console" and "prefix" and by default "Hello, ")
+  val writer = inject [PrintStream] (by default Console.err)
+
+  def print(str: String) {
+    writer.println(prefix + userName + " - " + str)
+  }
+}
+{% endhighlight %}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="play-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <img src="assets/img/play.png" title="akka" style="max-width:100%; max-height:100%;">
+      </div>
+      <div class="col-md-8">
+        <h2>Play Integration</h2>
+        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p>
+          {% highlight scala %}
+class AppModule extends Module {
+  bind [Printer] to new StreamPrinter
+  bind [PrintStream] to Console.out
+}
+
+class ConfigModule extends Module {
+  binding identifiedBy "userName" to "Bob"
+  binding identifiedBy "prefix" and "console" to "Howdy, "
+}
+{% endhighlight %}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Heading</h2>
+        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+      </div>
+      <div class="col-md-4">
+        <h2>Heading</h2>
+        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+      </div>
+      <div class="col-md-4">
+        <h2>Heading</h2>
+        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="akka-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <h2>Akka Integration</h2>
+        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p>
+          {% highlight scala %}
+class AppModule extends Module {
+  bind [Printer] to new StreamPrinter
+  bind [PrintStream] to Console.out
+}
+
+class ConfigModule extends Module {
+  binding identifiedBy "userName" to "Bob"
+  binding identifiedBy "prefix" and "console" to "Howdy, "
+}
+{% endhighlight %}
+        </p>
+      </div>
+      <div class="col-md-4">
+        <img src="assets/img/akka.png" title="akka" style="max-width:100%; max-height:100%;">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <!-- Example row of columns -->
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Heading</h2>
+        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+      </div>
+      <div class="col-md-4">
+        <h2>Heading</h2>
+        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+      </div>
+      <div class="col-md-4">
+        <h2>Heading</h2>
+        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+        <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
