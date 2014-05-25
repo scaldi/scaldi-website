@@ -1,0 +1,236 @@
+---
+layout: default
+animateHeader: false
+title: Learn Scaldi
+---
+
+<div class="secondary-spacer"></div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-9 main-content">
+      <section>
+        <h2>Getting a Taste of Scaldi</h2>
+
+        <section>
+          <h3>Define Bindings</h3>
+
+          <p>Scaldi provides nice DSL for defining the bindings</p>
+          <p>
+            {% highlight scala %}
+            class UserModule extends Module {
+            bind [MessageService] to new OfficialMessageService
+
+            binding identifiedBy "greeting.official" to "Welcome"
+            }
+            {% endhighlight %}
+          </p>
+          <a class="btn btn-success btn-sm" role="button">
+            <i class="fa fa-info-circle fa-lg top-icon"></i>
+            <span>Learn about bindings</span>
+          </a>
+        </section>
+
+        <section>
+          <h3 id="aaa">Inject Bindings</h3>
+          <p>With neat DSL for for injecting them</p>
+          <p>
+            {% highlight scala %}
+            class OfficialMessageService(implicit inj: Injector)
+            extends MessageService with Injectable {
+
+            val officialGreeting =
+            inject [String] (identified by "greeting.official")
+
+            def getGreetMessage(name: String) =
+            s"$officialGreeting, $name!"
+            }
+            {% endhighlight %}
+          </p>
+          <a class="btn btn-success btn-sm" role="button">
+            <i class="fa fa-info-circle fa-lg top-icon"></i>
+            <span>Learn about injection</span>
+          </a>
+        </section>
+
+        <section>
+          <h3 id="aaa">Inject Bindingsa</h3>
+          <p>With neat DSL for for injecting them</p>
+          <p>
+            {% highlight scala %}
+            class OfficialMessageService(implicit inj: Injector)
+            extends MessageService with Injectable {
+
+            val officialGreeting =
+            inject [String] (identified by "greeting.official")
+
+            def getGreetMessage(name: String) =
+            s"$officialGreeting, $name!"
+            }
+            {% endhighlight %}
+          </p>
+          <a class="btn btn-success btn-sm" role="button">
+            <i class="fa fa-info-circle fa-lg top-icon"></i>
+            <span>Learn about injection</span>
+          </a>
+        </section>
+
+        <section>
+          <h3 id="aaa">Inject Bindingsb</h3>
+          <p>With neat DSL for for injecting them</p>
+          <p>
+            {% highlight scala %}
+            class OfficialMessageService(implicit inj: Injector)
+            extends MessageService with Injectable {
+
+            val officialGreeting =
+            inject [String] (identified by "greeting.official")
+
+            def getGreetMessage(name: String) =
+            s"$officialGreeting, $name!"
+            }
+            {% endhighlight %}
+          </p>
+          <a class="btn btn-success btn-sm" role="button">
+            <i class="fa fa-info-circle fa-lg top-icon"></i>
+            <span>Learn about injection</span>
+          </a>
+        </section>
+
+        <section>
+          <h3 id="aaa">Inject Bindingsc</h3>
+          <p>With neat DSL for for injecting them</p>
+          <p>
+            {% highlight scala %}
+            class OfficialMessageService(implicit inj: Injector)
+            extends MessageService with Injectable {
+
+            val officialGreeting =
+            inject [String] (identified by "greeting.official")
+
+            def getGreetMessage(name: String) =
+            s"$officialGreeting, $name!"
+            }
+            {% endhighlight %}
+          </p>
+          <a class="btn btn-success btn-sm" role="button">
+            <i class="fa fa-info-circle fa-lg top-icon"></i>
+            <span>Learn about injection</span>
+          </a>
+        </section>
+      </section>
+      <section>
+        <h2>Getting a Taste of Scaldiaa</h2>
+
+        <section>
+          <h3>Define Bindingsaa</h3>
+
+          <p>Scaldi provides nice DSL for defining the bindings</p>
+          <p>
+            {% highlight scala %}
+            class UserModule extends Module {
+            bind [MessageService] to new OfficialMessageService
+
+            binding identifiedBy "greeting.official" to "Welcome"
+            }
+            {% endhighlight %}
+          </p>
+          <a class="btn btn-success btn-sm" role="button">
+            <i class="fa fa-info-circle fa-lg top-icon"></i>
+            <span>Learn about bindings</span>
+          </a>
+        </section>
+
+        <section>
+          <h3 id="aaa">Inject Bindingsaa</h3>
+          <p>With neat DSL for for injecting them</p>
+          <p>
+            {% highlight scala %}
+            class OfficialMessageService(implicit inj: Injector)
+            extends MessageService with Injectable {
+
+            val officialGreeting =
+            inject [String] (identified by "greeting.official")
+
+            def getGreetMessage(name: String) =
+            s"$officialGreeting, $name!"
+            }
+            {% endhighlight %}
+          </p>
+          <a class="btn btn-success btn-sm" role="button">
+            <i class="fa fa-info-circle fa-lg top-icon"></i>
+            <span>Learn about injection</span>
+          </a>
+        </section>
+
+        <section>
+          <h3 id="aaa">Inject Bindingsaaa</h3>
+          <p>With neat DSL for for injecting them</p>
+          <p>
+            {% highlight scala %}
+            class OfficialMessageService(implicit inj: Injector)
+            extends MessageService with Injectable {
+
+            val officialGreeting =
+            inject [String] (identified by "greeting.official")
+
+            def getGreetMessage(name: String) =
+            s"$officialGreeting, $name!"
+            }
+            {% endhighlight %}
+          </p>
+          <a class="btn btn-success btn-sm" role="button">
+            <i class="fa fa-info-circle fa-lg top-icon"></i>
+            <span>Learn about injection</span>
+          </a>
+        </section>
+
+        <section>
+          <h3 id="aaa">Inject Bindingsbaa</h3>
+          <p>With neat DSL for for injecting them</p>
+          <p>
+            {% highlight scala %}
+            class OfficialMessageService(implicit inj: Injector)
+            extends MessageService with Injectable {
+
+            val officialGreeting =
+            inject [String] (identified by "greeting.official")
+
+            def getGreetMessage(name: String) =
+            s"$officialGreeting, $name!"
+            }
+            {% endhighlight %}
+          </p>
+          <a class="btn btn-success btn-sm" role="button">
+            <i class="fa fa-info-circle fa-lg top-icon"></i>
+            <span>Learn about injection</span>
+          </a>
+        </section>
+
+        <section>
+          <h3>Inject Bindingscaa</h3>
+          <p>With neat DSL for for injecting them</p>
+          <p>
+            {% highlight scala %}
+            class OfficialMessageService(implicit inj: Injector)
+            extends MessageService with Injectable {
+
+            val officialGreeting =
+            inject [String] (identified by "greeting.official")
+
+            def getGreetMessage(name: String) =
+            s"$officialGreeting, $name!"
+            }
+            {% endhighlight %}
+          </p>
+          <a class="btn btn-success btn-sm" role="button">
+            <i class="fa fa-info-circle fa-lg top-icon"></i>
+            <span>Learn about injection</span>
+          </a>
+        </section>
+      </section>
+    </div>
+
+    <nav class="col-md-3 bs-docs-sidebar" id="sidebar"></nav>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 ---
 layout: default
+animateHeader: true
 ---
 
 <div class="jumbotron">
@@ -102,7 +103,7 @@ class OfficialMessageService(implicit inj: Injector)
   <div class="container">
     <div class="row">
       <div class="col-md-4">
-        <img src="assets/img/play.png" title="akka" class="integration-logo">
+        <img src="{{"/assets/img/play.png" | prepend: site.baseurl}}" title="akka" class="integration-logo">
       </div>
       <div class="col-md-8">
         <h2>Play Integration</h2>
@@ -287,7 +288,7 @@ class ConfigModule extends Module {
         </p>
       </div>
       <div class="col-md-4">
-        <img src="assets/img/akka.png" title="akka" class="integration-logo">
+        <img src="{{"/assets/img/akka.png" | prepend: site.baseurl}}" title="akka" class="integration-logo">
       </div>
     </div>
   </div>

@@ -3,211 +3,220 @@
 @import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
 
 .jumbotron, .footer-section, .navbar-fixed-top {
-    background-color: #F7A541;
+  background-color: #F7A541;
 }
 
 .play-section {
-    background-color: #9BC585;
+  background-color: #9BC585;
 }
 
 .akka-section {
-    background-color: #78B8BC;
+  background-color: #78B8BC;
 }
 
 .with-shadow {
-    /*http://www.cssmatic.com/box-shadow*/
-    -webkit-box-shadow: 0px 1px 20px 2px rgba(0,0,0,0.35);
-    -moz-box-shadow: 0px 1px 20px 2px rgba(0,0,0,0.35);
-    box-shadow: 0px 1px 20px 2px rgba(0,0,0,0.35);
+  /*http://www.cssmatic.com/box-shadow*/
+  -webkit-box-shadow: 0px 1px 20px 2px rgba(0,0,0,0.35);
+  -moz-box-shadow: 0px 1px 20px 2px rgba(0,0,0,0.35);
+  box-shadow: 0px 1px 20px 2px rgba(0,0,0,0.35);
 }
 
 .top-rounded a {
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 .top-icon {
-    padding-right: 5px;
+  padding-right: 5px;
 }
 
 .di {
-    font-style: italic !important;
+  font-style: italic !important;
 }
 
 h1, h2, h3, h4, h5, h6, .header-logo {
-    margin: 0 0 20px 0;
-    color: #333333;
-    font-family: "Quicksand", sans-serif;
-    line-height: 1.1em;
-    letter-spacing: -0.08em;
-    text-transform: uppercase;
-    text-shadow: none;
+  margin: 0 0 20px 0;
+  color: #333333;
+  font-family: "Quicksand", sans-serif;
+  line-height: 1.1em;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+  text-shadow: none;
 }
 
 h4 {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 h1, .header-logo {
-    text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
+  text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
 }
 
 body {
-    font-family: "Armata", sans-serif;
+  font-family: "Armata", sans-serif;
 }
 
 .header-logo {
-    font-size: 3em;
-    display: none;
-    float: left;
+  font-size: 3em;
+  display: none;
+  float: left;
 }
 
 .header-description {
-    float: left;
-    width: 400px;
-    line-height: 0;
-    padding-left: 15px;
-    opacity: 0.6;
-    margin-top: 35px;
-    display: none;
+  float: left;
+  width: 400px;
+  line-height: 0;
+  padding-left: 15px;
+  opacity: 0.6;
+  margin-top: 35px;
+  display: none;
+  color: #2c3e50;
 }
 
 .navbar-header {
-    padding-top: 0.4em;
+  padding-top: 0.4em;
 }
 
 .navbar-header .header-logo {
-    margin: 0;
+  margin: 0;
 }
 
 .main-spacer {
-    height: 30px;
+  height: 30px;
+}
+
+.secondary-spacer {
+  height: 50px;
 }
 
 @media (min-width: 320px){
-    .header-logo {
-        padding-left: 10px;
-    }
+  .header-logo {
+    padding-left: 10px;
+  }
 
-    .container > .row > div {
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
+  .container > .row > div {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
 }
 
 .navbar-inverse .navbar-nav > li > a {
-    color: #000000 !important;
+  color: #000000 !important;
 }
 
 .navbar-inverse .navbar-nav > li > a:hover {
-    color: #13987e !important;
+  color: #13987e !important;
 }
 
 .navbar-inverse .navbar-nav > li.active > a:hover {
-    color: #000000 !important;
+  color: #000000 !important;
 }
 
 li.open > a.dropdown-toggle:hover, li.open > a.dropdown-toggle, .navbar-inverse .navbar-nav > li.active > a {
-    color: #ffffff !important;
+  color: #ffffff !important;
 }
 
 .dropdown-menu > li > a:hover {
-    background-color: #15a589;
+  background-color: #15a589;
 }
 
 section {
-    padding-top: 30px;
-    padding-bottom: 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
 
 .main-button {
-    padding: 12px 15px 10px;
+  padding: 12px 15px 10px;
 }
 
 .main-button span {
-    font-size: 1.5em !important;
+  font-size: 1.5em !important;
 }
 
 .top-description {
-    font-size: 15px !important;
+  font-size: 15px !important;
 }
 
 .jumbotron {
-    padding-bottom: 30px;
-    margin-bottom: 0;
+  padding-bottom: 30px;
+  margin-bottom: 0;
 }
 
 .top-icon {
-    padding-left: 5px !important;
-    padding-right: 5px !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
 }
 
 .social-icons a {
-    padding-left: 5px;
-    padding-right: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .footer-section a {
-    color: #2c3e50;
+  color: #2c3e50;
 }
 
 .footer-section a:hover {
-    color: #000000;
+  color: #000000;
 }
 
 pre code {
-    font-family: "Source Code Pro";
-    font-size: 15px;
+  font-family: "Source Code Pro";
+  font-size: 15px;
 }
 
 .highlight {
-    background: none;
+  background: none;
 }
 
 .highlight pre {
-    color: #525e5f;
+  color: #525e5f;
 }
 
 .play-section pre {
-    background-color: #b3de94;
-    border: none;
+  background-color: #b3de94;
+  border: none;
 }
 
 .akka-section pre {
-    background-color: #88d5d9;
-    border: none;
+  background-color: #88d5d9;
+  border: none;
 }
 
 .highlight .s {
-    color: #358c3d;
+  color: #358c3d;
 }
 
 .integration-logo {
-    max-width:100%;
-    max-height:100%;
+  max-width:100%;
+  max-height:100%;
 }
 
 .class-name {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 a.link-link {
-    padding-left: 18px;
-    color: #2c3e50;
+  padding-left: 18px;
+  color: #2c3e50;
 }
 
 .a-link {
-    position: relative;
-    top: -70px;
-    margin: 0;
-    padding: 0;
-    float: left;
+  position: relative;
+  top: -80px;
+  margin: 0;
+  padding: 0;
+  float: left;
 }
 
 a.link-link:hover {
-    color: #18bc9c;
+  color: #18bc9c;
 }
 
-a.link-link span {
-    font-size: 25px;
+h2 a.link-link span {
+  font-size: 25px;
+}
+
+h3 a.link-link span {
+  font-size: 18px;
 }
