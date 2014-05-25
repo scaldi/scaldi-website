@@ -88,6 +88,11 @@ body {
     .header-logo {
         padding-left: 10px;
     }
+
+    .container > .row > div {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
 }
 
 .navbar-inverse .navbar-nav > li > a {
@@ -111,8 +116,8 @@ li.open > a.dropdown-toggle:hover, li.open > a.dropdown-toggle, .navbar-inverse 
 }
 
 section {
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 30px;
+    padding-bottom: 30px;
 }
 
 .main-button {
@@ -129,6 +134,7 @@ section {
 
 .jumbotron {
     padding-bottom: 30px;
+    margin-bottom: 0;
 }
 
 .top-icon {
@@ -174,4 +180,9 @@ pre code {
 
 .highlight .s {
     color: #358c3d;
+}
+
+.integration-logo {
+    max-width:100%;
+    max-height:100%;
 }
