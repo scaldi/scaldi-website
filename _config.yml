@@ -13,8 +13,10 @@ link:
   scaldi-github: https://github.com/scaldi
   scaldi-play-example-github: https://github.com/scaldi/scaldi-play-example
   scaldi-play-example-template: https://typesafe.com/activator/template/scaldi-play-example
+  scaldi-play-example-blog: http://hacking-scala.org/post/51407241538/easy-dependency-injection-in-play-framework-with-scaldi
   scaldi-akka-example-github: https://github.com/scaldi/scaldi-akka-example
   scaldi-akka-example-template: https://typesafe.com/activator/template/scaldi-akka-example
+  scaldi-akka-example-blog: http://hacking-scala.org/post/79931102837/dependency-injection-in-akka-with-scaldi
   scaldi-presentation: http://scaldi.github.io/scaldi-presentation
   twitter: https://twitter.com/easyangel
   stack-overflow: http://stackoverflow.com/questions/tagged/scaldi

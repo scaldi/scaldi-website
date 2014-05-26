@@ -222,3 +222,33 @@ h2 a.link-link span {
 h3 a.link-link span {
   font-size: 18px;
 }
+
+.play-section a.btn {
+  background: none;
+  color: #2c3e50;
+  border-color: #729569;
+}
+
+.play-section a.btn:hover {
+  background-color: #729569;
+  color: #ffffff;
+}
+
+.play-section a.btn:active {
+  background-color: #597756;
+}
+
+.akka-section a.btn {
+  background: none;
+  color: #2c3e50;
+  border-color: #568084;
+}
+
+.akka-section a.btn:hover {
+  background-color: #568084;
+  color: #ffffff;
+}
+
+.akka-section a.btn:active {
+  background-color: #47666a;
+}

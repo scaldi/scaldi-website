@@ -17,7 +17,7 @@ animateHeader: true
     <div class="row">
       <div class="col-md-4">
         <h2>Discover</h2>
-        <p>TODO Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p>Read the documentation and learn how you can use scaldi in your project.</p>
         <a class="btn btn-success btn-lg main-button" role="button" href="{{"/learn" | prepend: site.baseurl}}">
           <i class="fa fa-graduation-cap fa-2x top-icon"></i>
           <span>Learn</span>
@@ -25,7 +25,7 @@ animateHeader: true
       </div>
       <div class="col-md-4">
         <h2>Discuss</h2>
-        <p>TODO Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+        <p>Have any ideas or questions? There are many places where you can share and discuss them with others.</p>
         <p>
           <a class="btn btn-success btn-lg main-button" role="button" href="{{"/community" | prepend: site.baseurl}}">
             <i class="fa fa-comments-o fa-2x top-icon"></i>
@@ -36,7 +36,7 @@ animateHeader: true
 
       <div class="col-md-4">
         <h2>Contribute</h2>
-        <p>TODO Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p>If you like the project and want to contribute, then there are plenty ways to do so. Any ideas, improvements or bugfixes are very welcome! Just fork it now and start implementing new cool stuff :)</p>
         <p>
           <a class="btn btn-success btn-lg main-button" role="button" href="{{site.link.scaldi-github}}" target="_blank">
             <i class="fa fa-github fa-2x top-icon"></i>
@@ -103,24 +103,34 @@ class OfficialMessageService(implicit inj: Injector)
   <div class="container">
     <div class="row">
       <div class="col-md-4">
-        <img src="{{"/assets/img/play.png" | prepend: site.baseurl}}" title="akka" class="integration-logo">
+        <img src="{{"/assets/img/play.png" | prepend: site.baseurl}}" title="play" class="integration-logo">
       </div>
       <div class="col-md-8">
         <h2>Play Integration</h2>
-        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p>Scaldi also comes with the play framework support. Start using scaldi in the play application is as simple as mixing-in <span class="class-name">ScaldiSupport</span> in the <span class="class-name">Global</span>:</p>
         <p>
 {% highlight scala %}
-class AppModule extends Module {
-  bind [Printer] to new StreamPrinter
-  bind [PrintStream] to Console.out
-}
-
-class ConfigModule extends Module {
-  binding identifiedBy "userName" to "Bob"
-  binding identifiedBy "prefix" and "console" to "Howdy, "
+object Global extends GlobalSettings with ScaldiSupport {
+  def applicationModule = new UserModule :: new AuthControllersModule
 }
 {% endhighlight %}
         </p>
+        <p>From now on you can define your controllers as classes and not as global singletons ;)</p>
+        <p>
+{% highlight scala %}
+class Application(implicit inj: Injector) extends Controller with Injectable {
+  val messageService = inject [MessageService]
+
+  def index = Action {
+    Ok(views.html.index(messageService.getGreetMessage("Test User")))
+  }
+}
+{% endhighlight %}
+        </p>
+        <a class="btn btn-success btn-sm" role="button">
+          <i class="fa fa-info-circle fa-lg top-icon"></i>
+          <span>Learn about play integration</span>
+        </a>
       </div>
     </div>
   </div>
@@ -272,20 +282,30 @@ class MyModule extends Module {
     <div class="row">
       <div class="col-md-8">
         <h2>Akka Integration</h2>
-        <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+        <p>
+          With <span class="class-name">scaldi-akka</span> you can inject
+          <span class="class-name">ActorRef</span>s and <span class="class-name">Props</span> with
+          <span class="class-name">injectActorProps</span> and <span class="class-name">injectActorRef</span>.
+          Actors themselves can be defined in scaldi module.
+        </p>
         <p>
 {% highlight scala %}
-class AppModule extends Module {
-  bind [Printer] to new StreamPrinter
-  bind [PrintStream] to Console.out
-}
+class Receptionist(implicit inj: Injector) extends Actor with AkkaInjectable {
+  val orderProcessorProps = injectActorProps [OrderProcessor]
+  val priceCalculator = injectActorRef [PriceCalculator]
 
-class ConfigModule extends Module {
-  binding identifiedBy "userName" to "Bob"
-  binding identifiedBy "prefix" and "console" to "Howdy, "
+  def receive = {
+    case PlaceOrder(userName, itemId, netAmount) =>
+      val processor = context.actorOf(orderProcessorProps)
+      // ...
+  }
 }
 {% endhighlight %}
         </p>
+        <a class="btn btn-primary btn-sm" role="button">
+          <i class="fa fa-info-circle fa-lg top-icon"></i>
+          <span>Learn about akka integration</span>
+        </a>
       </div>
       <div class="col-md-4">
         <img src="{{"/assets/img/akka.png" | prepend: site.baseurl}}" title="akka" class="integration-logo">
@@ -329,8 +349,8 @@ libraryDependencies += "org.scaldi" %% "scaldi-akka" % "{{site.version.scaldi-ak
         <p>After the initial setup you can read <a href="{{"/learn" | prepend: site.baseurl}}">some documentation</a> or look at <a target="_blank" href="{{site.link.scaldi-presentation}}">scaldi presentation slides</a>.</p>
         <p>If you prefer more hands-on approach, then you may be interested in two example projects which you can play with:</p>
         <ul>
-          <li>Scaldi Play Example (<a target="_blank" href="{{site.link.scaldi-play-example-github}}">GitHub</a>, <a target="_blank" href="{{site.link.scaldi-play-example-template}}">Typesafe activator template</a>)</li>
-          <li>Scaldi Akka Example (<a target="_blank" href="{{site.link.scaldi-akka-example-github}}">GitHub</a>, <a target="_blank" href="{{site.link.scaldi-akka-example-template}}">Typesafe activator template</a>)</li>
+          <li>Scaldi Play Example (<a target="_blank" href="{{site.link.scaldi-play-example-github}}">GitHub</a>, <a target="_blank" href="{{site.link.scaldi-play-example-blog}}">Blog</a>, <a target="_blank" href="{{site.link.scaldi-play-example-template}}">Typesafe activator template</a>)</li>
+          <li>Scaldi Akka Example (<a target="_blank" href="{{site.link.scaldi-akka-example-github}}">GitHub</a>, <a target="_blank" href="{{site.link.scaldi-akka-example-blog}}">Blog</a>, <a target="_blank" href="{{site.link.scaldi-akka-example-template}}">Typesafe activator template</a>)</li>
         </ul>
       </div>
     </div>
