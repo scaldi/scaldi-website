@@ -88,13 +88,9 @@ $(function () {
       var topId = topHeader.find('.a-link').attr('id')
       var topListElem = $('<li><a href="#' + topId + '">' + topHeader.data("orig-text") + '</a></li>').appendTo(sidebar)
 
-//      topHeader.parent().addClass('group').attr('id', topId)
-
       var children = $('h3', topHeader.parent()).map(function () {
         var subHeader = $(this)
         var subId = subHeader.find('.a-link').attr('id')
-
-//        subHeader.parent().addClass('subgroup').attr('id', topId)
 
         return $('<li><a href="#' + subId + '">' + subHeader.data("orig-text") + '</a></li>')
       })
@@ -110,7 +106,7 @@ $(function () {
 
     $('body').scrollspy({
       target: '#' + top.attr('id'),
-      offset: 85 // magic number!!! do not touch
+      offset: 95 // magic number!!! do not touch
     })
   })
 })

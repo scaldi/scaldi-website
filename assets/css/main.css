@@ -89,15 +89,17 @@ body {
   height: 50px;
 }
 
-@media (min-width: 320px){
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 568px) {
   .header-logo {
     padding-left: 10px;
   }
+}
 
-  .container > .row > div {
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
+.container > .row > div {
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 .navbar-inverse .navbar-nav > li > a {

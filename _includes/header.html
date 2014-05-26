@@ -16,7 +16,7 @@
 
     <div class="navbar-collapse collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Download</a></li>
+        <li {% if page.url == "/download/" %}class="active"{% endif %}><a href="{{"/download" | prepend: site.baseurl}}">Download</a></li>
         <li {% if page.url == "/learn/" %}class="active"{% endif %}><a href="{{"/learn" | prepend: site.baseurl}}">Learn</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">API <b class="caret"></b></a>
@@ -28,8 +28,8 @@
             <li><a href="#">Changelog</a></li>
           </ul>
         </li>
-        <li><a href="#">Community</a></li>
-        <li><a href="#" title="GitHub"><i class="fa fa-github fa-lg"></i></a></li>
+        <li {% if page.url == "/community/" %}class="active"{% endif %}><a href="{{"/community" | prepend: site.baseurl}}">Community</a></li>
+        <li><a target="_blank" href="{{site.link.scaldi-github}}" title="Scaldi at GitHub"><i class="fa fa-github fa-lg"></i></a></li>
       </ul>
     </div>
   </div>

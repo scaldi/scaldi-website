@@ -9,6 +9,17 @@ version:
   scaldi-play: 0.3.3
   scaldi-akka: 0.3.3
 
+link:
+  scaldi-github: https://github.com/scaldi
+  scaldi-play-example-github: https://github.com/scaldi/scaldi-play-example
+  scaldi-play-example-template: https://typesafe.com/activator/template/scaldi-play-example
+  scaldi-akka-example-github: https://github.com/scaldi/scaldi-akka-example
+  scaldi-akka-example-template: https://typesafe.com/activator/template/scaldi-akka-example
+  scaldi-presentation: http://scaldi.github.io/scaldi-presentation
+  twitter: https://twitter.com/easyangel
+  stack-overflow: http://stackoverflow.com/questions/tagged/scaldi
+  google-groups: https://groups.google.com/forum/#!forum/scaldi
+
 markdown: kramdown
 permalink: pretty
 

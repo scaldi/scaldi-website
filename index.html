@@ -18,7 +18,7 @@ animateHeader: true
       <div class="col-md-4">
         <h2>Discover</h2>
         <p>TODO Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-        <a class="btn btn-success btn-lg main-button" role="button">
+        <a class="btn btn-success btn-lg main-button" role="button" href="{{"/learn" | prepend: site.baseurl}}">
           <i class="fa fa-graduation-cap fa-2x top-icon"></i>
           <span>Learn</span>
         </a>
@@ -27,7 +27,7 @@ animateHeader: true
         <h2>Discuss</h2>
         <p>TODO Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
         <p>
-          <a class="btn btn-success btn-lg main-button" role="button">
+          <a class="btn btn-success btn-lg main-button" role="button" href="{{"/community" | prepend: site.baseurl}}">
             <i class="fa fa-comments-o fa-2x top-icon"></i>
             <span>Community</span>
           </a>
@@ -38,7 +38,7 @@ animateHeader: true
         <h2>Contribute</h2>
         <p>TODO Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
         <p>
-          <a class="btn btn-success btn-lg main-button" role="button">
+          <a class="btn btn-success btn-lg main-button" role="button" href="{{site.link.scaldi-github}}" target="_blank">
             <i class="fa fa-github fa-2x top-icon"></i>
             <span>Fork</span>
           </a>
@@ -326,11 +326,11 @@ libraryDependencies += "org.scaldi" %% "scaldi-akka" % "{{site.version.scaldi-ak
 {% endhighlight %}
         </p>
         <br>
-        <p>After the initial setup you can read <a href="#">some documentation</a> or <a href="#">watch scaldi presentation slides</a>.</p>
+        <p>After the initial setup you can read <a href="{{"/learn" | prepend: site.baseurl}}">some documentation</a> or look at <a target="_blank" href="{{site.link.scaldi-presentation}}">scaldi presentation slides</a>.</p>
         <p>If you prefer more hands-on approach, then you may be interested in two example projects which you can play with:</p>
         <ul>
-          <li>Scaldi Play Example (<a href="#">GitHub</a>, <a href="#">Typesafe activator template</a>)</li>
-          <li>Scaldi Akka Example (<a href="#">GitHub</a>, <a href="#">Typesafe activator template</a>)</li>
+          <li>Scaldi Play Example (<a target="_blank" href="{{site.link.scaldi-play-example-github}}">GitHub</a>, <a target="_blank" href="{{site.link.scaldi-play-example-template}}">Typesafe activator template</a>)</li>
+          <li>Scaldi Akka Example (<a target="_blank" href="{{site.link.scaldi-akka-example-github}}">GitHub</a>, <a target="_blank" href="{{site.link.scaldi-akka-example-template}}">Typesafe activator template</a>)</li>
         </ul>
       </div>
     </div>
