@@ -21,6 +21,7 @@ link:
   twitter: https://twitter.com/easyangel
   stack-overflow: http://stackoverflow.com/questions/tagged/scaldi
   google-groups: https://groups.google.com/forum/#!forum/scaldi
+  scaldi-changelog: https://github.com/scaldi/scaldi/blob/master/CHANGELOG.md
 
 markdown: kramdown
 permalink: pretty
