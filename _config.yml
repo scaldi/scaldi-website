@@ -22,6 +22,10 @@ link:
   stack-overflow: http://stackoverflow.com/questions/tagged/scaldi
   google-groups: https://groups.google.com/forum/#!forum/scaldi
   scaldi-changelog: https://github.com/scaldi/scaldi/blob/master/CHANGELOG.md
+  scaladoc:
+    scaldi: http://scaldi.github.io/scaldi/latest/api
+    scaldi-play: http://scaldi.github.io/scaldi-play/latest/api/#scaldi.play.ScaldiSupport
+    scaldi-akka: http://scaldi.github.io/scaldi-akka/latest/api
 
 markdown: kramdown
 permalink: pretty
