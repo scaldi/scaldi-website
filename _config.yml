@@ -11,6 +11,10 @@ version:
 
 link:
   scaldi-github: https://github.com/scaldi
+  scaldi-maven: http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.scaldi%22
+  scaldi-releases: https://github.com/scaldi/scaldi/releases
+  scaldi-play-releases: https://github.com/scaldi/scaldi-play/releases
+  scaldi-akka-releases: https://github.com/scaldi/scaldi-akka/releases
   scaldi-play-example-github: https://github.com/scaldi/scaldi-play-example
   scaldi-play-example-template: https://typesafe.com/activator/template/scaldi-play-example
   scaldi-play-example-blog: http://hacking-scala.org/post/51407241538/easy-dependency-injection-in-play-framework-with-scaldi
@@ -26,6 +30,14 @@ link:
     scaldi: http://scaldi.github.io/scaldi/latest/api
     scaldi-play: http://scaldi.github.io/scaldi-play/latest/api/#scaldi.play.ScaldiSupport
     scaldi-akka: http://scaldi.github.io/scaldi-akka/latest/api
+  repo:
+    scaldi: https://github.com/scaldi/scaldi
+    scaldi-play: https://github.com/scaldi/scaldi-play
+    scaldi-akka: https://github.com/scaldi/scaldi-akka
+  maven:
+    scaldi: http://search.maven.org/#artifactdetails%7Corg.scaldi%7Cscaldi_
+    scaldi-play: http://search.maven.org/#artifactdetails%7Corg.scaldi%7Cscaldi-play_
+    scaldi-akka: http://search.maven.org/#artifactdetails%7Corg.scaldi%7Cscaldi-akka_
 
 markdown: kramdown
 permalink: pretty

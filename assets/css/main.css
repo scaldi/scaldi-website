@@ -253,3 +253,7 @@ h3 a.link-link span {
 .akka-section a.btn:active {
   background-color: #47666a;
 }
+
+.main-section section {
+  padding-bottom: 0;
+}

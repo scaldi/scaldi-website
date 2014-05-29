@@ -28,7 +28,7 @@ $(function () {
   }
 
   var slagify = function (text) {
-    return text.toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-')
+    return text.toLowerCase().replace(/[^\w \-]+/g,'').replace(/ +/g,'-')
   }
 
   $("h2, h3").each(function () {
