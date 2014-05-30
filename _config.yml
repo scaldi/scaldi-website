@@ -24,8 +24,10 @@ link:
   scaldi-presentation: http://scaldi.github.io/scaldi-presentation
   twitter: https://twitter.com/easyangel
   stack-overflow: http://stackoverflow.com/questions/tagged/scaldi
+  stack-overflow-ask: http://stackoverflow.com/questions/ask?tags=scala,scaldi
   google-groups: https://groups.google.com/forum/#!forum/scaldi
   scaldi-changelog: https://github.com/scaldi/scaldi/blob/master/CHANGELOG.md
+  blog: http://hacking-scala.org/
   scaladoc:
     scaldi: http://scaldi.github.io/scaldi/latest/api
     scaldi-play: http://scaldi.github.io/scaldi-play/latest/api/#scaldi.play.ScaldiSupport
@@ -38,6 +40,10 @@ link:
     scaldi: http://search.maven.org/#artifactdetails%7Corg.scaldi%7Cscaldi_
     scaldi-play: http://search.maven.org/#artifactdetails%7Corg.scaldi%7Cscaldi-play_
     scaldi-akka: http://search.maven.org/#artifactdetails%7Corg.scaldi%7Cscaldi-akka_
+  issues:
+    scaldi: https://github.com/scaldi/scaldi/issues
+    scaldi-play: https://github.com/scaldi/scaldi-play/issues
+    scaldi-akka: https://github.com/scaldi/scaldi-akka/issues
 
 markdown: kramdown
 permalink: pretty
