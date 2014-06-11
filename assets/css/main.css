@@ -257,3 +257,13 @@ h3 a.link-link span {
 .main-section section {
   padding-bottom: 0;
 }
+
+.main-content h2 {
+  margin-top: -70px;
+  padding-top: 100px;
+}
+
+.main-content h3 {
+  margin-top: -70px;
+  padding-top: 90px;
+}

@@ -1,3 +1,6 @@
+// Please forgive me fo this terrible JS code...
+// I just was trying to do make it work as quickly as possible
+// in order to be able to concentrate more on the actual content
 $(function () {
   var animateHeader = "" + $(document.body).data('animate-header')
 
@@ -33,9 +36,14 @@ $(function () {
 
   $("h2, h3").each(function () {
     var me = $(this)
+    var includeALink = me.parents('.main-content').size() === 0
     var slug = slagify(me.text())
+    var html = null
 
-    var html = me.data('orig-text', me.text()).append('<a id="' + slug + '" href="#" class="a-link"></a>').html()
+    if (includeALink)
+      html = me.data('orig-text', me.text()).append('<a id="' + slug + '" href="#" class="a-link"></a>').html()
+    else
+      html = me.data('orig-text', me.text()).attr('id', slug).html()
 
     me.mouseenter(function () {
       me.append('<a class="link-link" href="#' + slug + '"><span class="glyphicon glyphicon-link"></span></a>')
@@ -63,7 +71,7 @@ $(function () {
           .map(function () {
             var $el   = $(this)
             var href  = $el.data('target') || $el.attr('href')
-            var $href = /^#./.test(href) && $(href).parent() // taking parent because in our case it's H2
+            var $href = /^#./.test(href) && ($(href).attr('id') ? $(href) : $(href).parent()) // taking parent because in our case it's H2
 
             return ($href
                 && $href.length
@@ -83,14 +91,25 @@ $(function () {
     var top = $(this)
     var sidebar = $('<ul class="nav nav-stacked fixed">').appendTo(top)
 
-    $('.main-content h2').each(function () {
-      var topHeader = $(this)
-      var topId = topHeader.find('.a-link').attr('id')
+    var headers = []
+
+    $('.main-content :header').each(function () {
+      var header = $(this)
+      if (header.prop('tagName') === 'H2') {
+        headers.push({header: header, children: []})
+      } else if (header.prop('tagName') === 'H3') {
+        headers[headers.length - 1].children.push(header)
+      }
+    })
+
+    $(headers).each(function () {
+      var topHeader = this.header
+      var topId = (topHeader.attr('id') ? topHeader : topHeader.find('.a-link')).attr('id')
       var topListElem = $('<li><a href="#' + topId + '">' + topHeader.data("orig-text") + '</a></li>').appendTo(sidebar)
 
-      var children = $('h3', topHeader.parent()).map(function () {
+      var children = $(this.children).map(function () {
         var subHeader = $(this)
-        var subId = subHeader.find('.a-link').attr('id')
+        var subId = (subHeader.attr('id') ? subHeader : subHeader.find('.a-link')).attr('id')
 
         return $('<li><a href="#' + subId + '">' + subHeader.data("orig-text") + '</a></li>')
       })
@@ -104,9 +123,16 @@ $(function () {
       }
     })
 
+    var isNormalPage = $('.main-content').size() > 0
+
     $('body').scrollspy({
       target: '#' + top.attr('id'),
-      offset: 95 // magic number!!! do not touch
+      offset: isNormalPage ? 85 : 95 // magic number!!! do not touch
+    })
+
+    $('a').each(function () {
+      if (this.hostname !== window.location.hostname)
+        $(this).attr('target', '_blank')
     })
   })
 })
