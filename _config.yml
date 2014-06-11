@@ -44,6 +44,9 @@ link:
     scaldi: https://github.com/scaldi/scaldi/issues
     scaldi-play: https://github.com/scaldi/scaldi-play/issues
     scaldi-akka: https://github.com/scaldi/scaldi-akka/issues
+  website: https://github.com/scaldi/scaldi-website
+  jekyll: http://jekyllrb.com/
+  ghpages: https://pages.github.com/
 
 markdown: kramdown
 permalink: pretty
