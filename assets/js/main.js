@@ -45,12 +45,14 @@ $(function () {
     else
       html = me.data('orig-text', me.text()).attr('id', slug).html()
 
+    me.append($('<a class="link-link" href="#' + slug + '"><span class="glyphicon glyphicon-link"></span></a>').css('display', 'none'))
+
     me.mouseenter(function () {
-      me.append('<a class="link-link" href="#' + slug + '"><span class="glyphicon glyphicon-link"></span></a>')
+      me.find('.link-link').stop().fadeIn(300)
     })
 
     me.mouseleave(function () {
-      me.html(html)
+      me.find('.link-link').stop().fadeOut(300)
     })
   })
 
