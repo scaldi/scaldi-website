@@ -23,31 +23,39 @@ animateHeader: true
       <div class="col-md-4">
         <h2>Discover</h2>
         <p>Read the documentation and learn how you can use scaldi in your project.</p>
-        <a class="btn btn-success btn-lg main-button" role="button" href="{{"/learn" | prepend: site.baseurl}}">
-          <i class="fa fa-graduation-cap fa-2x top-icon"></i>
+      </div>
+
+      <div class="col-md-4">
+        <h2>Discuss</h2>
+        <p>Have any ideas or questions? There are many places where you can share and discuss them with others.</p>
+      </div>
+
+      <div class="col-md-4" style="padding-bottom: 0">
+        <h2>Contribute</h2>
+        <p>If you like the project and want to contribute, then there are plenty ways to do so. Any ideas, improvements or bugfixes are very welcome! Just fork it now and start implementing new cool stuff :)</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <a class="btn btn-success" role="button" href="{{"/learn" | prepend: site.baseurl}}">
+          <i class="fa fa-graduation-cap fa-lg top-icon"></i>
           <span>Learn</span>
         </a>
       </div>
       <div class="col-md-4">
-        <h2>Discuss</h2>
-        <p>Have any ideas or questions? There are many places where you can share and discuss them with others.</p>
-        <p>
-          <a class="btn btn-success btn-lg main-button" role="button" href="{{"/community" | prepend: site.baseurl}}">
-            <i class="fa fa-comments-o fa-2x top-icon"></i>
-            <span>Community</span>
-          </a>
-        </p>
+
+        <a class="btn btn-success" role="button" href="{{"/community" | prepend: site.baseurl}}">
+          <i class="fa fa-comments-o fa-lg top-icon"></i>
+          <span>Community</span>
+        </a>
       </div>
 
       <div class="col-md-4">
-        <h2>Contribute</h2>
-        <p>If you like the project and want to contribute, then there are plenty ways to do so. Any ideas, improvements or bugfixes are very welcome! Just fork it now and start implementing new cool stuff :)</p>
-        <p>
-          <a class="btn btn-success btn-lg main-button" role="button" href="{{site.link.scaldi-github}}" target="_blank">
-            <i class="fa fa-github fa-2x top-icon"></i>
-            <span>Fork</span>
-          </a>
-        </p>
+        <a class="btn btn-success" role="button" href="{{site.link.scaldi-github}}" target="_blank">
+          <i class="fa fa-github fa-lg top-icon"></i>
+          <span>Fork</span>
+        </a>
       </div>
     </div>
   </div>
@@ -74,9 +82,8 @@ class UserModule extends Module {
 }
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#define-bindings" | prepend: site.baseurl}}">
-          <i class="fa fa-info-circle fa-lg top-icon"></i>
-          <span>Learn about bindings</span>
+        <a role="button" href="{{"/learn/#define-bindings" | prepend: site.baseurl}}">
+          <span>Learn more about bindings</span>
         </a>
       </div>
       <div class="col-md-6">
@@ -95,9 +102,8 @@ class OfficialMessageService(implicit inj: Injector)
 }
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#inject-bindings" | prepend: site.baseurl}}">
-          <i class="fa fa-info-circle fa-lg top-icon"></i>
-          <span>Learn about injection</span>
+        <a role="button" href="{{"/learn/#inject-bindings" | prepend: site.baseurl}}">
+          <span>Learn more about injection</span>
         </a>
       </div>
     </div>
@@ -133,8 +139,7 @@ class Application(implicit inj: Injector) extends Controller with Injectable {
 {% endhighlight %}
         </p>
         <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#play-integration" | prepend: site.baseurl}}">
-          <i class="fa fa-info-circle fa-lg top-icon"></i>
-          <span>Learn about play integration</span>
+          <span>Learn more about play integration</span>
         </a>
       </div>
     </div>
@@ -166,9 +171,8 @@ def dbModule = new Module {
 def appModule = tokenModule :: dbModule
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#injector-composition" | prepend: site.baseurl}}">
-          <i class="fa fa-info-circle fa-lg top-icon"></i>
-          <span>Learn about composition</span>
+        <a role="button" href="{{"/learn/#injector-composition" | prepend: site.baseurl}}">
+          <span>Learn more about composition</span>
         </a>
       </div>
       <div class="col-md-6">
@@ -183,9 +187,8 @@ def mocksModule = new Module {
 implicit val testModule = mocksModule :: appModule
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#testing" | prepend: site.baseurl}}">
-          <i class="fa fa-info-circle fa-lg top-icon"></i>
-          <span>Learn about testing</span>
+        <a role="button" href="{{"/learn/#testing" | prepend: site.baseurl}}">
+          <span>Learn more about testing</span>
         </a>
       </div>
     </div>
@@ -237,9 +240,8 @@ def inDevMode(implicit inj: Injector) = {
 }
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#conditions" | prepend: site.baseurl}}">
-          <i class="fa fa-info-circle fa-lg top-icon"></i>
-          <span>Learn about conditions</span>
+        <a role="button" href="{{"/learn/#conditions" | prepend: site.baseurl}}">
+          <span>Learn more about conditions</span>
         </a>
       </div>
     </div>
@@ -258,9 +260,8 @@ class MyModule extends Module {
 }
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#binding-lifecycle" | prepend: site.baseurl}}">
-          <i class="fa fa-info-circle fa-lg top-icon"></i>
-          <span>Learn about lifecycle</span>
+        <a role="button" href="{{"/learn/#binding-lifecycle" | prepend: site.baseurl}}">
+          <span>Learn more about lifecycle</span>
         </a>
       </div>
       <div class="col-md-6">
@@ -308,8 +309,7 @@ class Receptionist(implicit inj: Injector) extends Actor with AkkaInjectable {
 {% endhighlight %}
         </p>
         <a class="btn btn-primary btn-sm" role="button" href="{{"/learn/#akka-integration" | prepend: site.baseurl}}">
-          <i class="fa fa-info-circle fa-lg top-icon"></i>
-          <span>Learn about akka integration</span>
+          <span>Learn more about akka integration</span>
         </a>
       </div>
       <div class="col-md-4">

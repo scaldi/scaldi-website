@@ -173,16 +173,22 @@ pre code {
 
 .highlight pre {
   color: #525e5f;
+  border-radius: 0;
+  border: none;
+  border-left: 2px solid #F7A541;
+  background-color: rgba(247, 165, 65, 0.06);
 }
 
 .play-section pre {
   background-color: #b3de94;
   border: none;
+  border-radius: 4px;
 }
 
 .akka-section pre {
   background-color: #88d5d9;
   border: none;
+  border-radius: 4px;
 }
 
 .highlight .s {
