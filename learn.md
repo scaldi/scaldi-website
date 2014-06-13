@@ -97,13 +97,128 @@ would be stopped after the first exception is happened.
 
 ### Module
 
+`Module` is the most common injector that you can use in most cases. It is mutable injector so it can have a lifecycle and it also provides
+nice DSL for the bindings. Here is an example of it's usage:
+
+{% highlight scala %}
+val injector = new Module {
+  binding identifiedBy 'host and 'google to "www.google.com"
+  binding identifiedBy 'host and 'yahoo to "www.yahoo.com"
+  binding identifiedBy 'host and 'github to "www.github.com"
+
+  binding identifiedBy 'server to HttpServer("localhost", 80)
+  binding identifiedBy 'server to None
+  binding identifiedBy 'server to HttpServer("test", 8080)
+
+  binding identifiedBy 'intAdder to ((a: Int, b: Int) => a + b)
+  binding identifiedBy 'stringAdder to ((s1: String, s2: String) => s1 + ", " + s2)
+
+  bind [Int] identifiedBy 'httpPort to 8081
+
+  bind [Server] identifiedBy 'http to
+    HttpServer(inject [String] ('httpHost), inject [Int] ('httpPort))
+
+  binding identifiedBy 'database and "local" to MysqlDatabase("my_app")
+}
+{% endhighlight %}
+
 ### DynamicModule
+
+`DynamicModule` is vary similar to the [Module](#module) so it is also a mutable injector which provides the binding DSL. The only
+difference is that it allows you bind dependencies in a function and not in the body of the subclass. Here is an example if it's usage:
+
+{% highlight scala %}
+implicit val injector = DynamicModule({ module =>
+ module.bind [Int] identifiedBy 'httpPort to 8081
+ module.bind [Server] identifiedBy 'http to
+   HttpServer(inject [String] ('httpHost), inject [Int] ('httpPort))
+ module.binding identifiedBy 'database and "local" to MysqlDatabase("my_app")
+})
+{% endhighlight %}
 
 ### StaticModule
 
+`StaticModule` is an immutable injector that allows you to define binding as `def`s, `val`s and `lazy val`s in the body of the subclass:
+
+{% highlight scala %}
+val module = new StaticModule {
+  lazy val server = new TcpServer
+  lazy val otherServer = HttpServer(inject [String] ("httpHost"), inject [Int] ('httpPort))
+
+  def tcpHost = "tcp-test"
+  def tcpPort = 1234
+
+  val httpHost = "localhost"
+  val httpPort = 4321
+}
+{% endhighlight %}
+
+The resulting bindings have 2 [identifiers](#identifiers):
+
+* String identifier which is the name if the class member (e.g. `tcpHost`, `otherServer`, etc.)
+* Class identifier which is return type of the `def` or the type of the `val`
+
+In some cases this can be pretty restrictive, because your bindings can't have have more identifiers or conditions associated with them.
+To prvide more flexibility Scaldi also allows you to return a `BindingProvider` from the member of the class instead of a regular type.
+Here is how it looks like:
+
+{% highlight scala %}
+trait BindingProvider {
+  def getBinding(name: String, tpe: Type): Binding
+}
+{% endhighlight %}
+
+So `BindingProvider` gives you the complete control over the resulting binding.
+
 ### Property Injector
 
+All property injectors are immutable and allow you to add binding from a property file or `Properties` class. Here is a small example how
+you can use it:
+
+{% highlight scala %}
+// define some properties
+val props = new  Properties()
+
+props.setProperty("host", "test-prop")
+props.setProperty("port", "54321")
+
+// main application module
+class AppModule extends Module {
+  bind [Server] to HttpServer(inject [String] ('host), inject [Int] ('port))
+
+  binding identifiedBy 'host to "localhost"
+  binding identifiedBy 'port to 80
+}
+
+implicit val injector = PropertiesInjector(props) :: new AppModule
+
+Injectable.inject[Server] should equal (HttpServer("test-prop", 54321))
+{% endhighlight %}
+
+All properties are available as bindings and each property has only one string identifier and it's the name of the property.
+The type of the binding is defined on the inject side. You can inject following types:
+
+* Int
+* Float
+* Double
+* Boolean
+* File
+* String
+
+In addition to `PropertiesInjector` you can also use `SystemPropertiesInjector` which, as you can imagine,
+allows you to inject system properties. In fact both these classes extend `RawInjector`, which allows you
+easily write similar injectors. For example this is the complete implementation of `PlayConfigurationInjector`
+that provides all properties from play application configuration as a bindings:
+
+{% highlight scala %}
+class PlayConfigurationInjector(app: => Application) extends RawInjector {
+  def getRawValue(name: String) = app.configuration.getString(name)
+}
+{% endhighlight %}
+
 ### Injector Composition
+
+### Implementing Scoped Bindings
 
 ### Extending Injector
 
@@ -113,6 +228,8 @@ your own injectors.
 ## Identifiers
 
 ## Define Bindings
+
+### Binding Overrides
 
 ### Lazy Binding
 
