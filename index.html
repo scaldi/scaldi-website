@@ -74,7 +74,7 @@ class UserModule extends Module {
 }
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button">
+        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#define-bindings" | prepend: site.baseurl}}">
           <i class="fa fa-info-circle fa-lg top-icon"></i>
           <span>Learn about bindings</span>
         </a>
@@ -95,7 +95,7 @@ class OfficialMessageService(implicit inj: Injector)
 }
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button">
+        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#inject-bindings" | prepend: site.baseurl}}">
           <i class="fa fa-info-circle fa-lg top-icon"></i>
           <span>Learn about injection</span>
         </a>
@@ -132,7 +132,7 @@ class Application(implicit inj: Injector) extends Controller with Injectable {
 }
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button">
+        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#play-integration" | prepend: site.baseurl}}">
           <i class="fa fa-info-circle fa-lg top-icon"></i>
           <span>Learn about play integration</span>
         </a>
@@ -166,7 +166,7 @@ def dbModule = new Module {
 def appModule = tokenModule :: dbModule
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button">
+        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#injector-composition" | prepend: site.baseurl}}">
           <i class="fa fa-info-circle fa-lg top-icon"></i>
           <span>Learn about composition</span>
         </a>
@@ -183,7 +183,7 @@ def mocksModule = new Module {
 implicit val testModule = mocksModule :: appModule
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button">
+        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#testing" | prepend: site.baseurl}}">
           <i class="fa fa-info-circle fa-lg top-icon"></i>
           <span>Learn about testing</span>
         </a>
@@ -237,7 +237,7 @@ def inDevMode(implicit inj: Injector) = {
 }
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button">
+        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#conditions" | prepend: site.baseurl}}">
           <i class="fa fa-info-circle fa-lg top-icon"></i>
           <span>Learn about conditions</span>
         </a>
@@ -258,7 +258,7 @@ class MyModule extends Module {
 }
 {% endhighlight %}
         </p>
-        <a class="btn btn-success btn-sm" role="button">
+        <a class="btn btn-success btn-sm" role="button" href="{{"/learn/#binding-lifecycle" | prepend: site.baseurl}}">
           <i class="fa fa-info-circle fa-lg top-icon"></i>
           <span>Learn about lifecycle</span>
         </a>
@@ -307,7 +307,7 @@ class Receptionist(implicit inj: Injector) extends Actor with AkkaInjectable {
 }
 {% endhighlight %}
         </p>
-        <a class="btn btn-primary btn-sm" role="button">
+        <a class="btn btn-primary btn-sm" role="button" href="{{"/learn/#akka-integration" | prepend: site.baseurl}}">
           <i class="fa fa-info-circle fa-lg top-icon"></i>
           <span>Learn about akka integration</span>
         </a>
