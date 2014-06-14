@@ -305,12 +305,133 @@ consume bindings from it. So if `configModule` would have been an immutable inje
 
 ### Implementing Scoped Bindings
 
+Moy may be familiar with the concept of **scope** from other DI libraries out there.
+The scope of binding defines the context and the lifespan of the binding. So if we are talking about the web application,
+then you can define bindings in scope of the request or a session, for instance.
 
+Scaldi does not provide any support for the scopes out of the box. More often than not, most useful scopes are tightly coupled
+with some other library that you are working with in you project, like web framework. So scaldi stays unopinionated in this
+respect, which allows you to use Scaldi with any library or framework you wish.
+
+From the other hand, you can easily achieve very similar behaviour just by using abstractions that Scaldi provides out of the box.
+Here I would like to show you a small example of how you can define a scoped bindings and isolate them from the rest of the bindings
+by creating some kind of a sandbox for them.
+
+In order to be able to do this, we need to define the sandbox itself first:
+
+{% highlight scala %}
+class ImmutableWrapper(delegate: Injector) extends Injector with ImmutableInjector {
+  def getBinding(identifiers: List[Identifier]): Option[Binding] =
+    delegate.getBinding(identifiers)
+
+  def getBindings(identifiers: List[Identifier]): List[Binding] =
+    delegate.getBindings(identifiers)
+}
+{% endhighlight %}
+
+Here we define a very simple implementation of an injector, that just delegates the binding lookup to some other injector
+(`delegate` in this case). The important thing to notice here is that `ImmutableWrapper` is an `ImmutableInjector`. This means that it
+will guard `delegate` from any lifecycle of the parent composition, if it gets composed with another injector. It also will know nothing about
+the final composition, because it is immutable, so it only able to contribute it's bindings to the composition, but not aware of it at all.
+
+Now lets use it:
+
+{% highlight scala %}
+class AppModule extends Module {
+  bind [Database] to new Riak(inject [String] ('host), 1234)
+
+  binding identifiedBy 'host to "localhost"
+}
+
+class UserScopedModule(user: User) extends Module {
+  binding to user
+
+  bind [ProfileService] to new DbProfileService
+}
+
+val mainModule = new AppModule
+
+def processUser(user: User) = {
+  implicit val userScopedModule = new UserScopedModule(user) :: new ImmutableWrapper(mainModule)
+
+  val profileService = inject [ProfileService]
+
+  profileService.deactivateProfile()
+
+  userScopedModule.destroy()
+}
+
+processUser(User("John", "Doe"))
+processUser(User("Some", "User"))
+processUser(User("Another", "One"))
+{% endhighlight %}
+
+`DbProfileService` looks like this:
+
+{% highlight scala %}
+case class DbProfileService(implicit inj: Injector) extends ProfileService with Injectable  {
+  val db = inject [Database]
+  val user = inject [User]
+
+  def deactivateProfile() = {
+    println(s"deactivating $user")
+  }
+}
+{% endhighlight %}
+
+Even after you destroyed `userScopedModule`, `mainModule` still remains intact, even though both of these injectors are mutable,
+because we isolated it from the `userScopedModule` with the `ImmutableWrapper`.
+
+So as you can see, core Scaldi abstractions are flexible enough to even express concepts that are normally built-in in other libraries.
 
 ### Extending Injector
 
-As you can see, `Injector` is pretty straightforward interface so just by implementing `getBinding` and `getBindings` methods you can create
-your own injectors.
+`Injector` is pretty straightforward interface to implement (we already saw several examples of it above):
+
+{% highlight scala %}
+trait Injector {
+ def getBinding(identifiers: List[Identifier]): Option[Binding]
+ def getBindings(identifiers: List[Identifier]): List[Binding]
+
+ // ...
+}
+{% endhighlight %}
+
+so just by implementing `getBinding` and `getBindings` methods you can create your own injectors.
+You can also reuse some parts of Scaldi implementation. Here is an example of new mutable injector, which can be used
+in the injector composition (which on itself means that it would be properly initialized/destroyed and that it also aware of the
+final injector composition):
+
+{% highlight scala %}
+class ControllerInjector extends MutableInjectorUser
+                            with InjectorWithLifecycle[ControllerInjector]
+                            with ShutdownHookLifecycleManager {
+
+  def getBindingInternal(identifiers: List[Identifier]) = {
+    // your binding lookup logic
+  }
+
+  def getBindingsInternal(identifiers: List[Identifier]) = {
+    // your binding lookup logic
+  }
+
+  protected def init(lifecycleManager: LifecycleManager) = {
+    // your initialization logic
+  }
+}
+{% endhighlight %}
+
+Hre is the list of some of the traits that you can mix-in in your own `Injector` implementations:
+
+* `MutableInjectorUser` - contains implicit reference to `injector` - the final injector composition which is used by `inject`.
+  Injector aggregation will set it during the initialization phase
+* `InjectorWithLifecycle` - for the injectors that have lifecycle and can be initialized/destroyed
+* `LifecycleManager` - all mutable injectors need to be a `LifecycleManager`
+  * `ShutdownHookLifecycleManager` - implementation of the `LifecycleManager` that calls all of it's destroy callbacks during the
+    JVM shutdown. The implementation is idempotent and thread-safe.
+* `Injectable` - provides [injection DSL](#inject-bindings) in body of the subclasses (similar to what `Module` allows you to do, if you extend it)
+* `WordBinder` - provides [binding DSL](#define-bindings) in body of the subclasses (similar to what `Module` allows you to do, if you extend it)
+* `ReflectionBinder` - gathers all `val`s, `def`s and `lazy val`s in the body of the subclasses and exposes them as a bindings (similar to what `StaticModule` allows you to do, if you extend it)
 
 ## Identifiers
 
