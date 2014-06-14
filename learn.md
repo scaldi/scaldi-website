@@ -777,7 +777,7 @@ When you are defining bindings, you can also specify a condition with `when` wor
 
 {% highlight scala %}
 bind [Database] when inProdMode to new Riak
-bind [Database] when (inDevMode or inTestMode) to new InMemory database
+bind [Database] when (inDevMode or inTestMode) to new InMemoryDatabase
 {% endhighlight %}
 
 This gives you a lot of flexibility in the ways you can define the bindings.
@@ -857,5 +857,168 @@ you from doing in most cases - it's always a good idea to keep your test code se
 
 ## Play Integration
 
+To add a Scaldi support in the play application you need to include `scaldi-play` in the **build.sbt**:
+
+{% highlight scala %}
+libraryDependencies += "org.scaldi" %% "scaldi-play" % "{{site.version.scaldi-play}}"
+{% endhighlight %}
+
+After this you would be able to mix-in `ScaldiSupport` trait in the `Global` object:
+
+{% highlight scala %}
+object Global extends GlobalSettings with ScaldiSupport {
+  def applicationModule = new WebModule :: new UserModule
+}
+{% endhighlight %}
+
+As you can see, you also need to implement `applicationModule` method. By doing this you tell play which Injector should be used
+to lookup the controller instances. This is also a good place to compose the main injector for your Play application.
+
+Now you can bind controllers as any other class in the Module for example:
+
+{% highlight scala %}
+class Application(implicit inj: Injector) extends Controller with Injectable {
+  val messageService = inject [MessageService]
+
+  def index = Action {
+    Ok(views.html.index(messageService.getGreetMessage("Test User")))
+  }
+}
+
+class WebModule extends Module {
+  binding to new Application
+
+  bind [MessageService] to new OfficialMessageService
+}
+{% endhighlight %}
+
+It's not much different from what haw you are using Scaldi outside of the play application. Nice thing about it
+is that you no longer need to make `Controller` a global singleton `object`, but instead it can be a plain `class`.
+
+One omportant thing that you now need to do is to prefix the controller class in the **conf/routes** file with `@`.
+There is an example of how you can define a route for the `Application` controller:
+
+{% highlight scala %}
+GET  /                 @controllers.Application.index
+{% endhighlight %}
+
+By doing this, you are telling Play to use Scaldi to resolve the controller instance instead of trying to use it's own
+internal mechanisms for it.
+
+You can find a tutorial and an example play application in Scaldi Play Example ([GitHub]({{site.link.scaldi-play-example-github}}), [Blog]({{site.link.scaldi-play-example-blog}}), [Typesafe activator template]({{site.link.scaldi-play-example-template}})).
+
+### Play-specific Bindings
+
+Play support also makes following bindings automatically available for you to inject:
+
+* `Application` - the Play `Application` in which injector lives
+* `Mode` - the mode of the Play `Application`
+* `Configuration` - the `Configuration` of the Play `Application`
+
+### Play-specific Conditions
+
+Following conditions are available for you to use in the binding definition:
+
+* `inDevMode`
+* `inTestMode`
+* `inProdMode`
+
+They all use Play `Application`s mode. Here is an example of how you can use them:
+
+{% highlight scala %}
+bind [Database] when inProdMode to new Riak
+bind [Database] when (inDevMode or inTestMode) to new InMemoryDatabase
+{% endhighlight %}
+
+### Injecting Play Configuration
+
+**scaldi-play** provides integration with Play configuration (`conf/application.conf`) out of the box.
+So you can, for example, define `greeting.official` property there:
+
+{% highlight scala %}
+greeting.official = Welcome
+{% endhighlight %}
+
+and then just inject it anywhere in your application
+
+{% highlight scala %}
+val officialGreeting = inject [String] (identified by "greeting.official")
+{% endhighlight %}
+
+You can also inject other primitive types like `Int` or `Boolean` and not only `String` (similar to `PropertiesInjector`).
+If you would like to use `configuration` instance directly, then you need inject it like this:
+
+{% highlight scala %}
+val config = inject [Configuration]
+{% endhighlight %}
+
 ## Akka Integration
 
+To add a Scaldi support in the akk application you need to include `scaldi-akka` in the **build.sbt**:
+
+{% highlight scala %}
+libraryDependencies += "org.scaldi" %% "scaldi-akka" % "{{site.version.scaldi-akka}}"
+{% endhighlight %}
+
+The only new thing that `scaldi-akka` adds is `AkkaInjectable`, which provides 2 additional inject methods:
+
+* `injectActorRef` - creates a new actor with the help of `ActorRef` factory which should be implicitly available in the scope.
+* `injectActorProps` - injects `Props` for the `Actor`, so that you can create new `Actor`s yourself with the help of the `ActorRef` factory.
+
+where `ActorRef` can be one of two things:
+
+* `ActorContext` - it always implicitly available within an `Actor` and can be used to create a new actors in the context of current actor
+* `ActorSystem`
+
+Here is a small example of how you can use `AkkaInjectable` to inject (which actually means create in case of actors) another actor:
+
+{% highlight scala %}
+class Receptionist (implicit inj: Injector) extends Actor with AkkaInjectable {
+  val userService = inject [UserService]
+
+  val orderProcessorProps = injectActorProps [OrderProcessor]
+  val priceCalculator = injectActorRef [PriceCalculator]
+
+  def receive = {
+    case PlaceOrder(userName, itemId, netAmount) =>
+        val processor = context.actorOf(orderProcessorProps)
+        // ...
+  }
+}
+{% endhighlight %}
+
+Or alternatively, if you want to create an actor somewhere else (not inside an actor), you need to provide an implicit `ActorSystem` in the scope:
+
+{% highlight scala %}
+import scaldi.akka.AkkaInjectable._
+
+implicit val appModule: Injector = // ...
+
+implicit val system = inject [ActorSystem]
+
+val receptionist = injectActorRef [Receptionist]
+{% endhighlight %}
+
+We have created some actors that are able to use `inject`. The only thing that remains now is to create a module that binds them together
+with other dependencies and the `ActorSysyem` itself:
+
+{% highlight scala %}
+class OrderModule extends Module {
+  bind [UserService] to new SimpleUserService
+
+  bind [ActorSystem] to ActorSystem("ScaldiExample") destroyWith (_.shutdown())
+
+  binding toProvider new Receptionist
+  binding toProvider new OrderProcessor
+  binding toProvider new PriceCalculator
+}
+{% endhighlight %}
+
+I would like to point out how `Actor` are bound. It is important, that you bind then with `toProvider` function.
+It will make sure, that Scaldi always creates new instances of the `Actor` classes when you injecting them
+with `injectActorRef` or `injectActorProps`. These two methods actually use Akka mechanisms to configure an actor
+instance under-the-hood, but the actor instance creation itself is always delegated to Scaldi.
+During this process, Akka requires the delegate to always create new instances of an actor, so by binding `Actor`s
+with `toProvider` you are fulfilling the protocol, that Akka implies.
+
+You can find a tutorial and an example akka application in Scaldi Akka Example ([GitHub]({{site.link.scaldi-akka-example-github}}), [Blog]({{site.link.scaldi-akka-example-blog}}), [Typesafe activator template]({{site.link.scaldi-akka-example-template}})).
