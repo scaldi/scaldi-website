@@ -86,10 +86,10 @@ injector.destroy()
 `destroy` method is also idempotent. Here is its signature:
 
 {% highlight scala %}
-def destroy(errorHandler: Throwable => Boolean = IgnoringErrorHandler)
+def destroy(errorHandler: Throwable => Boolean = IgnoringErrorHandler): Unit
 {% endhighlight %}
 
-As you can see, It also allows you to provide an error handler, that would be called if some exception happens during the
+As you can see, it also allows you to provide an error handler that would be called if some exception happens during the
 destruction of one of the bindings. The default `IgnoringErrorHandler` just prints the stack trace and continues the shutdown procedure.
 
 If error handler returns `true`, then and exception will not stop the shutdown procedure. If it returns `false`, then shutdown procedure
@@ -218,7 +218,94 @@ class PlayConfigurationInjector(app: => Application) extends RawInjector {
 
 ### Injector Composition
 
+Scaldi also allows you to compose injectors together with `::` or `++` operators:
+
+{% highlight scala %}
+val mainInjector = new ApplicationModule :: new DatabaseModule
+
+// or the equivalent
+
+val mainInjector = new ApplicationModule ++ new DatabaseModule
+{% endhighlight %}
+
+Now when you `inject` bindings from the `mainInjector` it will lookup bindings from both injectors:
+`ApplicationModule` and `DatabaseModule`. **The order of the injectors is important.** So the binding lookup would
+happen from left to right. This means if `ApplicationModule` and `DatabaseModule` both have a binding with the same identifiers, than one from
+the `ApplicationModule` wins and would be injected. You can find more information about binding
+overrides [in the correspondent section](#binding-overrides).
+
+There is also another important aspect of the injector composition, namely mutability level. You can compose
+mutable and immutable injectors together and the result you be either `ImmutableInjectorAggregation` or `MutableInjectorAggregation`
+which is an injector on it's own, so it can be composed further with other injectors. This mean that if you are composing
+more than 2 injectors together, than they will form a tree, in which internal nodes are the the injector aggregations and
+the leafs are the concrete injectors you are composing.
+
+The composition is implemented with the type class `CanCompose`:
+
+{% highlight scala %}
+trait CanCompose[-A, -B, +R] {
+  def compose(cmp1: A, cmp2: B): R
+}
+{% endhighlight %}
+
+where `A` and `B` are the injectors on the left and right side of the composition. `R` is the type of the resulting injector, that combines
+`A` and `B` in some way. Scaldi defines following rules for the injector composition (which you can customise by providing your own implicit instances of
+the `CanCompose` type class):
+
+* immutable injector + immutable injector = immutable injector aggregation
+* mutable injector + immutable injector = mutable injector aggregation
+* immutable injector + mutable injector = mutable injector aggregation
+
+There is also another special type of the injector which is called `NilInjector`. It does not contain any bindings and
+completely ignored during the composition. It can be useful if you want to conditionally compose some injector in one expression:
+
+{% highlight scala %}
+val inj = new AModule :: (if (someCondition) new BModule else NilInjector) :: new CModule
+{% endhighlight %}
+
+Mutability in terms of injector composition means 2 things. First it means, that when aggregation is initialized or destroyed, then
+it will also recursively initialize or destroy all of it's mutable children. So in this example:
+
+{% highlight scala %}
+val injector = new SomeImmutableInjector :: new SomeMutableInjector
+
+injector.initNonLazy()
+injector.destroy()
+{% endhighlight %}
+
+only `SomeMutableInjector` would be influenced. `SomeImmutableInjector` is not touched by the aggregation when `injector.initNonLazy()` or
+`injector.destroy()` is called.
+
+Mutability also changes the way binding lookup is done within a module. Every concrete injector like `Module` or `StaticModule`
+has an implicit injector instance in scope when you are defining the bindings. That's because you are able to inject binding within
+a `Module`, for example, or you are able to create new instances of classes that take and implicit instance of `Injector` as a constructor
+argument. But this implicit injector instance is different in mutable and immutable injectors. It would easier to explain it small example:
+
+{% highlight scala %}
+val dbModule = new Module {
+  bind [Database] to new Riak(inject [String] ('host))
+}
+
+val configModule = new Module {
+ bind [String] identifiedBy 'host to "localhost"
+ bind [AppConfig] to new AppConfig(inject [Database])
+}
+
+val appModule = dbModule :: configModule
+{% endhighlight %}
+
+both `dbModule` and `configModule` are mutable injector, so the implicit injector reference, that they provide within them,
+is referencing the final injector composition (`appModule` in this case) and not themselves. That's the reason why you are able
+to `inject [String] ('host)` within the `dbModule` and `inject [Database]` within the `configModule`. The reference to the final
+composition is propagated during the initialization phase.
+
+Immutable injectors on the other hand do not have any kind of initialisation phase, so the implicit injector, that they provide,
+always references themselves. They only can contribute it's own bindings to the final composition, but they are unable to
+consume bindings from it. So if `configModule` would have been an immutable injector, then it would fail because of the `inject [Database]`.
+
 ### Implementing Scoped Bindings
+
+
 
 ### Extending Injector
 
