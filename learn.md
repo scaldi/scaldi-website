@@ -654,7 +654,7 @@ you can also skip `identified by ` part and just write:
 val userDb = inject [Database] ('remote and 'users)
 {% endhighlight %}
 
-{% include ext.html type="info" title="Explicit Binding Type" %}
+{% include ext.html type="info" title="Explicit binding type" %}
 Please make sure to always provide the type of the binding explicitly (except when you are providing the default value).
 Unfortunately compiler can't correctly infer it in most cases.
 But don't worry - the application will not compile if you forgot to specify the type you want to inject.
@@ -718,7 +718,7 @@ val db = inject [Database] (identified by 'remote is by default default new Riak
 val db = inject [Database] (identified by 'remote and by default new Riak)
 {% endhighlight %}
 
-{% include ext.html type="info" title="Use Defaults With Caution" %}
+{% include ext.html type="info" title="Use defaults with caution" %}
 Event though default values can be useful in some circumstances, I would recommend you to avoid them in
 most cases. Scaldi provides a lot of tools to help you in this respect. For example you can extract all of your defaults in
 one/several modules and then compose them with the rest of the application modules. By doing this you
@@ -773,7 +773,87 @@ taking you team and the nature of the project into the consideration.
 
 ## Conditions
 
+When you are defining bindings, you can also specify a condition with `when` word:
+
+{% highlight scala %}
+bind [Database] when inProdMode to new Riak
+bind [Database] when (inDevMode or inTestMode) to new InMemory database
+{% endhighlight %}
+
+This gives you a lot of flexibility in the ways you can define the bindings.
+
+Out of the box Scaldi comes with `SysPropCondition` which can enable/disable binding based on the system property:
+
+{% highlight scala %}
+val inDevMode = SysPropCondition(name = "mode", value = "dev")
+val inProdMode = !inDevMode
+{% endhighlight %}
+
+But you can easily convert any predicate in condition like this:
+
+{% highlight scala %}
+val inDevMode = Condition(System.getProperty("devMode") != null)
+{% endhighlight %}
+
+As you already saw, conditions can be composed with `or` and `and` operators and they also support unary `!` for negation.
+
+Here is an example of how `inDevMode` is implemented in the play support:
+
+{% highlight scala %}
+def inDevMode(implicit inj: Injector) = {
+  val mode = inject [Mode] ('playMode)
+
+  Condition(mode == Dev)
+}
+{% endhighlight %}
+
+As you can see, you can even use injected dependencies in your condition.
+
+Conditions is a very powerful tool, which can be used in many interesting ways. But please use it with caution,
+and don't introduce too many conditions in your application. Also try to keep them intuitive and simple.
+
 ## Testing
+
+Even though Scaldi does not provide explicit testing support or test-kit of any description, the testability was kept in
+mind from the ground up. If you read this documentation from the beginning, you probably already have an idea how you can
+test a application that uses Scaldi to do the dependency injection.
+
+The main feature that will help you with testing is the binding overrides. You can can override any binding so that the original
+binding will never be touched/instantiated and the overriding binding would be used instead.
+
+{% highlight scala %}
+// production code
+
+class AppModule extends Module {
+  bind [Database] to new Riak
+}
+
+// testing code
+
+def mocksModule = new Module {
+  bind [Database] to new InMemoryDb
+}
+
+implicit val testModule = mocksModule :: new AppModule
+
+val db = inject [Database]
+{% endhighlight %}
+
+Biding lookup happen from left to right, so the binding for the `mocksModule` would be first looked-up in `mocksModule`, so the
+`db` gets an instance of `InMemoryDb` and `Riak` would not be instantiated at all.
+
+{% include ext.html type="info" title="Don't reuse already initialised injectors" %}
+As you can see in this example, I used `def` to define `mocksModule` and I also created a fresh instance of the `AppModule`. This is
+important, because they both are mutable so they have a lifecycle associated with them. If I will make and `object` from the `AppModule`
+(instead of `class`), then it will not work correctly if you have more than one test that creates `testModule` because the injector
+aggregation will try to initialize it once aging when `Database` is injected, which is wrong. If you want to reuse an initialised
+injector, then you need guard it with an immutable injector as described in the
+["Implementing Scoped Bindings" section](#implementing-scoped-bindings) (but in this case you can't override the bindings) or you can
+simply create a new instance of injector as described in the example above.
+{% include cend.html %}
+
+Alternatively you can also use [conditions](#conditions) to define binding that are only active during the tests, but I would discourage
+you from doing in most cases - it's always a good idea to keep your test code separated from the production code.
 
 ## Play Integration
 
