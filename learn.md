@@ -435,23 +435,341 @@ Hre is the list of some of the traits that you can mix-in in your own `Injector`
 
 ## Identifiers
 
+The list of `Identifier`s is used to identify the binding. Unlike many other DI libraries, Scaldi does not hardcode the notion of the
+identifier, but rather provides very simple interface and uses it to lookup the bindings:
+
+{% highlight scala %}
+trait Identifier {
+  def sameAs(other: Identifier): Boolean
+}
+{% endhighlight %}
+
+Out of the box Scaldi comes with following identifiers:
+
+* `TypeTagIdentifier`
+* `StringIdentifier`
+
+These are the most common one - normally you associate the binding with some type and optionally with the set string identifiers.
+In this example:
+
+{% highlight scala %}
+bind [Server] identifiedBy 'real and 'http to
+  HttpServer(inject [String] ('httpHost))
+{% endhighlight %}
+
+As you can see, `Symbol`s are also treated as string identifiers. In this case biding gets these 3 identifiers:
+
+* `TypeTagIdentifier(typeOf[Server])`
+* `StringIdentifier("real")`
+* `StringIdentifier("server")`
+
+and the `inject` will lookup binding with *at least* following identifiers:
+
+* `TypeTagIdentifier(typeOf[String])`
+* `StringIdentifier("httpHost")`
+
+Scaldi also provides a type class in order to treat an existing classes like `String` or `Symbol` as identifiers:
+
+{% highlight scala %}
+trait CanBeIdentifier[T] {
+  def toIdentifier(target: T): Identifier
+}
+{% endhighlight %}
+
+So if you want some existing class to be treated as an identifier, then you need to provide an implicit instance of `CanBeIdentifier` in scope.
+
 ## Define Bindings
+
+Scaldi provides a biding DSL which you can you can use inside of the `Module`. Here is an example of how you can bind some object:
+
+{% highlight scala %}
+class AppModule extends Module {
+  binding identifiedBy 'host and 'google to "www.google.com"
+
+  bind [Server] identifiedBy 'http when inProdMode to new HttpServer destroyWith (_.shutdown())
+}
+{% endhighlight %}
+
+you can start to define binding with either `bind` or `binding` word. `bind` accepts one type parameter, which would be the
+`TypeTagIdentifier` of the binding or in other words it is the type of the bindings. `binding` syntax assumes that the type of the binding
+is the same to the bound object, so it does not take any type parameters.
+
+You can provide addition identifiers for the binding with `identifiedBy` word or `as` and if you have more than one additional identifier, then you
+can use `and`:
+
+{% highlight scala %}
+bind [Server] identifiedBy 'http and 'server to new HttpServer
+
+// or equivalent
+
+bind [Server] as 'http and 'server to new HttpServer
+{% endhighlight %}
+
+After this you can define a condition (only one, but you can combine several conditions with `or` or `and`) with `when` word:
+
+{% highlight scala %}
+bind [Server] when (inDevMode or inTestMode) to new HttpServer
+{% endhighlight %}
+
+you can find more information about the conditions in the [Conditions section](#conditions).
+
+The actual value of the binding is bound with the different flavours of `to` word (if you prefer, you can use `in*` instead of `to*` syntax):
+
+* `to` - defines a lazy binding
+* `toNonLazy` - defines a non-lazy binding
+* `toProvider` - defines a provider binding
+
+all types of the bindings are described in more detail in the next sections.
+
+Finally you can specify a lifecycle callbacks with `initWith`/`destroyWith` words which take a function `T => Unit` as an argument, where
+`T` is the type of the binding:
+
+{% highlight scala %}
+bind [Server] to new HttpServer initWith (_.init()) destroyWith (_.shutdown())
+{% endhighlight %}
 
 ### Binding Overrides
 
+You can define several bindings for the same set of identifiers. During the binding lookup (when you injecting them) the latest
+one would be used. You can also un-define the binding by defining the new binding to `None`. Here is an example:
+
+{% highlight scala %}
+bind [Server] to new HttpServer(port = 1234)
+bind [Server] to None
+bind [Server] to new HttpServer(port = 8080)
+{% endhighlight %}
+
+IN this example when you inject the `Server`:
+
+{% highlight scala %}
+val server = inject [Server]
+{% endhighlight %}
+
+then the `server` instance will have port 8080 (and only one instance of `HttpServer` would be created).
+
 ### Lazy Binding
+
+Lazy bindings are defined with the `to` word:
+
+{% highlight scala %}
+bind [UserService] to new UserService
+{% endhighlight %}
+
+The instance would be created **only once** as soon as as the binding is injected for the first time. All consequent
+injects inject the instance that was created first time.
 
 ### Non-Lazy Binding
 
+Non-lazy bindings are defined with the `toNonLazy` word:
+
+{% highlight scala %}
+bind [Database] toNonLazy new Riak
+{% endhighlight %}
+
+The instance would be created **only once**, but it would be created as soon as injector (in which it is defined) is initialized.
+All injects get the save instance of the binding.
+
 ### Provider Binding
 
-### Custom Bindings
+Provider bindings are defined with the `toProvider` word:
+
+{% highlight scala %}
+bind [Client] toProvider new HttpClient
+{% endhighlight %}
+
+A new instance is created **each time** the binding is injected. This means that each time you inject the binging, you get the new instance.
 
 ### Binding Lifecycle
 
+The lifecycle of the binding consist of the init and destroy phases.
+
+You can define the `T => Unit` initialization function with `initWith` word:
+
+{% highlight scala %}
+bind [Server] to new HttpServer initWith (_.init())
+{% endhighlight %}
+
+the same for the function that destroys the object. You can use `destroyWith` word:
+
+{% highlight scala %}
+bind [Server] to new HttpServer destroyWith (_.shutdown())
+{% endhighlight %}
+
+The bindings are destroyed together with the `Injector` in which they are defined. The initialization depends on
+the binding type, but in general it is initialized as soon as new instance of binding is created and before it is injected.
+
+### Custom Bindings
+
+When you are creating you own `Injector`s, you also have opportunity to create your own types of bindings by implementing one of two traits:
+
+* `Binding` - meant to be maintained by immutable injectors
+* `BindingWithLifecycle` - meant to be maintained by mutable injectors
+
+Alternatively you can use bindings that come out of the box:
+
+* `LazyBinding`
+* `NonLazyBinding`
+* `ProviderBinding`
+
 ## Inject Bindings
 
+Scaldi provides nice DSL for the binding injection. In order to make it available, you need to either import from `Injectable`:
+
+{% highlight scala %}
+import Injectable._
+{% endhighlight %}
+
+or extend it in your class:
+
+{% highlight scala %}
+class UserService(implicit inj: Injector) extends Injectable {
+  // ...
+}
+{% endhighlight %}
+
+Here is an example of how you can inject a binding:
+
+{% highlight scala %}
+val db = inject [Database] (identified by 'remote is by default defaultDb)
+{% endhighlight %}
+
+All forms of inject expect and implicit instance of `Injector` to be in scope.
+If you are injecting in the module definition, then it already provides one for you. If you
+are injecting in you own classes, then the best approach you be to provide the implicit injector
+instance as a constructor argument, as shown in the example above.
+
+### Inject Single Binding
+
+To inject a single binding you need to use `inject` method. It tales a type parameter, which is the type of the binding and
+would treated as a `TypeTagIdentifier`. You can also provide additional biding identifiers using `identified by` and separate
+identifiers with `and` word:
+
+{% highlight scala %}
+val userDb = inject [Database] (identified by 'remote and 'users)
+{% endhighlight %}
+
+you can also skip `identified by ` part and just write:
+
+{% highlight scala %}
+val userDb = inject [Database] ('remote and 'users)
+{% endhighlight %}
+
+{% include ext.html type="info" title="Explicit Binding Type" %}
+Please make sure to always provide the type of the binding explicitly (except when you are providing the default value).
+Unfortunately compiler can't correctly infer it in most cases.
+But don't worry - the application will not compile if you forgot to specify the type you want to inject.
+{% include cend.html %}
+
+### Inject Provider Function
+
+In addition to `inject`, which injects the concrete instance of the binding, you can use `injectProvider` which will
+inject the function of type `() => T`, where `T`
+is the type of the binding. It can be useful if the binding itself is defined with `toProvider`, so that each time you use it, you will
+get the new instance. Other use case would be conditional bindings - if you have defined a binding with the same identifiers but with different
+conditions, then this function can return different instances depending on the condition you've defined.
+
+Here is an example of how you can use it:
+
+{% highlight scala %}
+class UserService(implicit inj: Injector) extends Injectable {
+  val metrics = injectProvider [MetricsReporter]
+
+  def loginUser(user: User) = {
+    metrics().incrementCounter("user.login")
+
+    // ...
+  }
+}
+{% endhighlight %}
+
+### Inject Several Bindings
+
+In some cases you need to inject all bindings that match the identifiers. You can do this by using the `injectAllOfType`
+
+{% highlight scala %}
+val databases: List[Database] = injectAllOfType [Database]
+{% endhighlight %}
+
+You can also provide additional identifiers as an vararg argument:
+
+{% highlight scala %}
+val databases: List[Database] = injectAllOfType [Database] ('user, 'cache)
+{% endhighlight %}
+
+If you don't want to specify the `TypeTagIdentifier`, then you can use `injectAll`, which just takes the list of identifiers as an argument
+and has no type parameters.
+
 ### Default Values
+
+You can also specify the default value for the binding. It would be used, if the biding is not found in the `Injector`.
+Here is an example of it:
+
+{% highlight scala %}
+val db = inject [Database] (by default new Riak)
+{% endhighlight %}
+
+if you already providing some additional identifiers and would like add the default value, then you can use `is` or `and` word:
+
+{% highlight scala %}
+val db = inject [Database] (identified by 'remote is by default default new Riak)
+
+// or equivalent
+
+val db = inject [Database] (identified by 'remote and by default new Riak)
+{% endhighlight %}
+
+{% include ext.html type="info" title="Use Defaults With Caution" %}
+Event though default values can be useful in some circumstances, I would recommend you to avoid them in
+most cases. Scaldi provides a lot of tools to help you in this respect. For example you can extract all of your defaults in
+one/several modules and then compose them with the rest of the application modules. By doing this you
+will make sure, that defaults are defined only once.
+{% include cend.html %}
+
+### Constructor Injection vs Implicit Injector
+
+Generally you can take two approaches when it comes to the injection of dependencies.
+
+You define all dependencies of some class as a constructor arguments. In this case you need to provide all of
+them when you are instantiating the class. Here is how you can do it in Scaldi:
+
+{% highlight scala %}
+class UserService(repo: UserRepository, metrics: MetricsReporter) {
+  // ...
+}
+
+class AppModule extends Module {
+  binding to new UserService(
+    repo = inject [UserRepository],
+    metrics = inject [MetricsReporter]
+  )
+}
+{% endhighlight %}
+
+Scaldi do not provide any mechanism to "magically" inject `repo` and `metrics` when `UserService` is instantiated.
+Generally it can be a good idea to provide some kind of safe mechanism for this, so maybe in future Scaldi will get a macro
+that will automatically provide the constructor arguments for you.
+
+Another approach would be to bring the implicit injector instance in scope of class and do the injection there:
+
+{% highlight scala %}
+class UserService(implicit inj: Injector) extends Injectable {
+  val repo = inject [UserRepository]
+  val metrics = inject [MetricsReporter]
+
+  // ...
+}
+
+class AppModule extends Module {
+  binding to new UserService
+}
+{% endhighlight %}
+
+This approach definitely removes some of the boilerplate, but also couples UserService with Scaldi.
+
+I think in most cases it's the matter of your personal/your teams preference which approach you take. Each of them has a trade-off
+to make, but in many cases the constructor injection approach is the most clean one, even though it requires a little bit more
+ceremony, so I you recommend you to use it. But every application is different, so you need to decide it for yourself,
+taking you team and the nature of the project into the consideration.
 
 ## Conditions
 

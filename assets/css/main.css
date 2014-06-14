@@ -283,7 +283,7 @@ h3 a.link-link span {
 .bs-callout {
   margin: 20px 0;
   padding: 20px;
-  border-left: 3px solid #eee;
+  border-left: 2px solid #eee;
 }
 .bs-callout h4 {
   margin-top: 0;
@@ -297,7 +297,7 @@ h3 a.link-link span {
 }
 .bs-callout code {
   background-color: #fff;
-  border-radius: 3px;
+  border-radius: 2px;
 }
 .bs-callout-danger {
   background-color: #fdf7f7;

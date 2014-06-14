@@ -77,8 +77,8 @@ $(function () {
       this.offsets = $([])
       this.targets = $([])
 
-      var self     = this
-
+      var self = this
+      var inc  = 0 // looks terrible, I know
       this.$body
           .find(this.selector)
           // just wonder why it was here in the first place
@@ -88,10 +88,12 @@ $(function () {
             var href  = $el.data('target') || $el.attr('href')
             var $href = /^#./.test(href) && ($(href).attr('id') ? $(href) : $(href).parent()) // taking parent because in our case it's H2
 
+            inc = inc + 1
+
             return ($href
                 && $href.length
                 && $href.is(':visible')
-                && [[ $href[offsetMethod]().top + (!$.isWindow(self.$scrollElement.get(0)) && self.$scrollElement.scrollTop()), href ]]) || null
+                && [[ $href[offsetMethod]().top + (inc < 3 ? 0 : inc * 25) + (!$.isWindow(self.$scrollElement.get(0)) && self.$scrollElement.scrollTop()), href ]]) || null
           })
           .sort(function (a, b) { return a[0] - b[0] })
           .each(function () {
@@ -138,11 +140,9 @@ $(function () {
       }
     })
 
-    var isNormalPage = $('.main-content').size() > 0
-
     $('body').scrollspy({
       target: '#' + top.attr('id'),
-      offset: isNormalPage ? 85 : 95 // magic number!!! do not touch
+      offset: 0
     })
 
     $('a').each(function () {
