@@ -3,6 +3,8 @@ description: "Scaldi - Lightweight Dependency Injection Library"
 baseurl: ""
 url: "http://scaldi.org"
 theme: flatly
+ga-code: UA-41090613-1
+domain: scaldi.org
 
 version:
   scaldi: 0.3.2
