@@ -40,9 +40,8 @@ trait Injector {
 }
 {% endhighlight %}
 
-
 Out of the box Scaldi comes with several different types of `Injector`s. Most of the implementations contain the actual bindings and
-provide some kind of DSL to define them (e.g. `Module`, `StaticModule`, `PropertyInjector`).
+provide a DSL to define them (e.g. `Module`, `StaticModule`, `PropertyInjector`).
 Other injectors have more specific role and serve as a wrapper for other injectors or as an integration point between Scaldi and other libraries.
 `PropertyInjector` or `PlayConfigurationInjector` are examples of such `Injector`s.
 `Injector` itself is used by the `inject` function (which takes an `Injector` as an implicit argument) to inject these bindings.
@@ -92,8 +91,8 @@ def destroy(errorHandler: Throwable => Boolean = IgnoringErrorHandler): Unit
 As you can see, it also allows you to provide an error handler that would be called if some exception happens during the
 destruction of one of the bindings. The default `IgnoringErrorHandler` just prints the stack trace and continues the shutdown procedure.
 
-If error handler returns `true`, then and exception will not stop the shutdown procedure. If it returns `false`, then shutdown procedure
-would be stopped after the first exception is happened.
+If error handler returns `true`, then and exception will not stop the shutdown procedure, otherwise then it
+would be stopped.
 
 ### Module
 
@@ -124,7 +123,7 @@ val injector = new Module {
 
 ### DynamicModule
 
-`DynamicModule` is vary similar to the [Module](#module) so it is also a mutable injector which provides the binding DSL. The only
+`DynamicModule` is very similar to the [Module](#module) so it is also a mutable injector which provides the binding DSL. The only
 difference is that it allows you bind dependencies in a function and not in the body of the subclass. Here is an example if it's usage:
 
 {% highlight scala %}
@@ -156,7 +155,7 @@ val module = new StaticModule {
 The resulting bindings have 2 [identifiers](#identifiers):
 
 * String identifier which is the name if the class member (e.g. `tcpHost`, `otherServer`, etc.)
-* Class identifier which is return type of the `def` or the type of the `val`
+* Class identifier which is the return type of the `def` or the type of `val`
 
 In some cases this can be pretty restrictive, because your bindings can't have have more identifiers or conditions associated with them.
 To prvide more flexibility Scaldi also allows you to return a `BindingProvider` from the member of the class instead of a regular type.
@@ -235,8 +234,8 @@ the `ApplicationModule` wins and would be injected. You can find more informatio
 overrides [in the correspondent section](#binding-overrides).
 
 There is also another important aspect of the injector composition, namely mutability level. You can compose
-mutable and immutable injectors together and the result you be either `ImmutableInjectorAggregation` or `MutableInjectorAggregation`
-which is an injector on it's own, so it can be composed further with other injectors. This mean that if you are composing
+mutable and immutable injectors together and the result can be either `ImmutableInjectorAggregation` or `MutableInjectorAggregation`,
+which is an injector on itself, so it can be composed further with other injectors. This means that if you are composing
 more than 2 injectors together, than they will form a tree, in which internal nodes are the the injector aggregations and
 the leafs are the concrete injectors you are composing.
 
@@ -294,7 +293,7 @@ val configModule = new Module {
 val appModule = dbModule :: configModule
 {% endhighlight %}
 
-both `dbModule` and `configModule` are mutable injector, so the implicit injector reference, that they provide within them,
+both `dbModule` and `configModule` are mutable injectors, so the implicit injector reference, that they provide within them,
 is referencing the final injector composition (`appModule` in this case) and not themselves. That's the reason why you are able
 to `inject [String] ('host)` within the `dbModule` and `inject [Database]` within the `configModule`. The reference to the final
 composition is propagated during the initialization phase.
@@ -305,13 +304,13 @@ consume bindings from it. So if `configModule` would have been an immutable inje
 
 ### Implementing Scoped Bindings
 
-Moy may be familiar with the concept of **scope** from other DI libraries out there.
-The scope of binding defines the context and the lifespan of the binding. So if we are talking about the web application,
+You may be familiar with the concept of **scope** from other DI libraries out there.
+The scope of binding defines the context and the lifespan of the binding. So if we are talking about a web application,
 then you can define bindings in scope of the request or a session, for instance.
 
 Scaldi does not provide any support for the scopes out of the box. More often than not, most useful scopes are tightly coupled
 with some other library that you are working with in you project, like web framework. So scaldi stays unopinionated in this
-respect, which allows you to use Scaldi with any library or framework you wish.
+respect, which allows you to use Scaldi with any library or framework of your choice.
 
 From the other hand, you can easily achieve very similar behaviour just by using abstractions that Scaldi provides out of the box.
 Here I would like to show you a small example of how you can define a scoped bindings and isolate them from the rest of the bindings
@@ -421,7 +420,7 @@ class ControllerInjector extends MutableInjectorUser
 }
 {% endhighlight %}
 
-Hre is the list of some of the traits that you can mix-in in your own `Injector` implementations:
+Here is the list of some of the traits that you can mix-in in your own `Injector` implementations:
 
 * `MutableInjectorUser` - contains implicit reference to `injector` - the final injector composition which is used by `inject`.
   Injector aggregation will set it during the initialization phase
@@ -449,7 +448,7 @@ Out of the box Scaldi comes with following identifiers:
 * `TypeTagIdentifier`
 * `StringIdentifier`
 
-These are the most common one - normally you associate the binding with some type and optionally with the set string identifiers.
+These are the most common one - normally you associate the binding with some type and optionally with the set of string identifiers.
 In this example:
 
 {% highlight scala %}
@@ -480,7 +479,7 @@ So if you want some existing class to be treated as an identifier, then you need
 
 ## Define Bindings
 
-Scaldi provides a biding DSL which you can you can use inside of the `Module`. Here is an example of how you can bind some object:
+Scaldi provides a biding DSL which you can you can use inside of the `Module`. Here is an example of how you can create the bindings:
 
 {% highlight scala %}
 class AppModule extends Module {
@@ -539,7 +538,7 @@ bind [Server] to None
 bind [Server] to new HttpServer(port = 8080)
 {% endhighlight %}
 
-IN this example when you inject the `Server`:
+In this example when you inject the `Server`:
 
 {% highlight scala %}
 val server = inject [Server]
@@ -567,7 +566,7 @@ bind [Database] toNonLazy new Riak
 {% endhighlight %}
 
 The instance would be created **only once**, but it would be created as soon as injector (in which it is defined) is initialized.
-All injects get the save instance of the binding.
+All injects get the same instance of the binding.
 
 ### Provider Binding
 
@@ -577,7 +576,7 @@ Provider bindings are defined with the `toProvider` word:
 bind [Client] toProvider new HttpClient
 {% endhighlight %}
 
-A new instance is created **each time** the binding is injected. This means that each time you inject the binging, you get the new instance.
+A new instance is created **each time** the binding is injected. This means that each time you inject the binging, you get a new instance.
 
 ### Binding Lifecycle
 
@@ -635,12 +634,12 @@ val db = inject [Database] (identified by 'remote is by default defaultDb)
 
 All forms of inject expect and implicit instance of `Injector` to be in scope.
 If you are injecting in the module definition, then it already provides one for you. If you
-are injecting in you own classes, then the best approach you be to provide the implicit injector
+are injecting in you own classes, then the best approach would be to provide the implicit injector
 instance as a constructor argument, as shown in the example above.
 
 ### Inject Single Binding
 
-To inject a single binding you need to use `inject` method. It tales a type parameter, which is the type of the binding and
+To inject a single binding you need to use `inject` method. It takes a type parameter, which is the type of the binding and
 would treated as a `TypeTagIdentifier`. You can also provide additional biding identifiers using `identified by` and separate
 identifiers with `and` word:
 
@@ -655,7 +654,7 @@ val userDb = inject [Database] ('remote and 'users)
 {% endhighlight %}
 
 {% include ext.html type="info" title="Explicit binding type" %}
-Please make sure to always provide the type of the binding explicitly (except when you are providing the default value).
+Please make sure to always provide the type of the binding explicitly (except when you are also providing the default value).
 Unfortunately compiler can't correctly infer it in most cases.
 But don't worry - the application will not compile if you forgot to specify the type you want to inject.
 {% include cend.html %}
@@ -729,8 +728,8 @@ will make sure, that defaults are defined only once.
 
 Generally you can take two approaches when it comes to the injection of dependencies.
 
-You define all dependencies of some class as a constructor arguments. In this case you need to provide all of
-them when you are instantiating the class. Here is how you can do it in Scaldi:
+You can define all dependencies of some class as a constructor arguments. In this case you need to provide all of
+them when you are instantiating the class. Here is how you can do it with Scaldi:
 
 {% highlight scala %}
 class UserService(repo: UserRepository, metrics: MetricsReporter) {
@@ -747,9 +746,9 @@ class AppModule extends Module {
 
 Scaldi do not provide any mechanism to "magically" inject `repo` and `metrics` when `UserService` is instantiated.
 Generally it can be a good idea to provide some kind of safe mechanism for this, so maybe in future Scaldi will get a macro
-that will automatically provide the constructor arguments for you.
+that will automatically initialize constructor arguments for you.
 
-Another approach would be to bring the implicit injector instance in scope of class and do the injection there:
+Another approach would be to bring the implicit injector instance in scope of class and do injection directly there:
 
 {% highlight scala %}
 class UserService(implicit inj: Injector) extends Injectable {
@@ -766,7 +765,7 @@ class AppModule extends Module {
 
 This approach definitely removes some of the boilerplate, but also couples UserService with Scaldi.
 
-I think in most cases it's the matter of your personal/your teams preference which approach you take. Each of them has a trade-off
+I think in most cases it's the matter of your personal/your teams preference which approach to take. Each of them has a trade-off
 to make, but in many cases the constructor injection approach is the most clean one, even though it requires a little bit more
 ceremony, so I you recommend you to use it. But every application is different, so you need to decide it for yourself,
 taking you team and the nature of the project into the consideration.
@@ -839,21 +838,21 @@ implicit val testModule = mocksModule :: new AppModule
 val db = inject [Database]
 {% endhighlight %}
 
-Biding lookup happen from left to right, so the binding for the `mocksModule` would be first looked-up in `mocksModule`, so the
-`db` gets an instance of `InMemoryDb` and `Riak` would not be instantiated at all.
+Biding lookup happens from left to right, so the binding for the `mocksModule` would be first looked-up in `mocksModule`. The
+`db` will get an instance of `InMemoryDb` and `Riak` would not be instantiated at all.
 
 {% include ext.html type="info" title="Don't reuse already initialised injectors" %}
 As you can see in this example, I used `def` to define `mocksModule` and I also created a fresh instance of the `AppModule`. This is
 important, because they both are mutable so they have a lifecycle associated with them. If I will make and `object` from the `AppModule`
-(instead of `class`), then it will not work correctly if you have more than one test that creates `testModule` because the injector
+(instead of `class`), then it will not work correctly if you have more than one test that creates `testModule`, because the injector
 aggregation will try to initialize it once aging when `Database` is injected, which is wrong. If you want to reuse an initialised
 injector, then you need guard it with an immutable injector as described in the
 ["Implementing Scoped Bindings" section](#implementing-scoped-bindings) (but in this case you can't override the bindings) or you can
 simply create a new instance of injector as described in the example above.
 {% include cend.html %}
 
-Alternatively you can also use [conditions](#conditions) to define binding that are only active during the tests, but I would discourage
-you from doing in most cases - it's always a good idea to keep your test code separated from the production code.
+Alternatively you can use [conditions](#conditions) to define binding that are only active during the tests, but I would discourage
+you from doing this in most cases - it's always a good idea to keep your test code separated from the production code.
 
 ## Play Integration
 
@@ -874,7 +873,7 @@ object Global extends GlobalSettings with ScaldiSupport {
 As you can see, you also need to implement `applicationModule` method. By doing this you tell play which Injector should be used
 to lookup the controller instances. This is also a good place to compose the main injector for your Play application.
 
-Now you can bind controllers as any other class in the Module for example:
+Now you can bind controllers as any other class in the Module. For example:
 
 {% highlight scala %}
 class Application(implicit inj: Injector) extends Controller with Injectable {
@@ -892,7 +891,7 @@ class WebModule extends Module {
 }
 {% endhighlight %}
 
-It's not much different from what haw you are using Scaldi outside of the play application. Nice thing about it
+It's not much different from the way you are using Scaldi outside of the play application. Nice thing about it
 is that you no longer need to make `Controller` a global singleton `object`, but instead it can be a plain `class`.
 
 One omportant thing that you now need to do is to prefix the controller class in the **conf/routes** file with `@`.
@@ -954,7 +953,7 @@ val config = inject [Configuration]
 
 ## Akka Integration
 
-To add a Scaldi support in the akk application you need to include `scaldi-akka` in the **build.sbt**:
+To add a Scaldi support in the akka application you need to include `scaldi-akka` in the **build.sbt**:
 
 {% highlight scala %}
 libraryDependencies += "org.scaldi" %% "scaldi-akka" % "{{site.version.scaldi-akka}}"
@@ -965,7 +964,7 @@ The only new thing that `scaldi-akka` adds is `AkkaInjectable`, which provides 2
 * `injectActorRef` - creates a new actor with the help of `ActorRef` factory which should be implicitly available in the scope.
 * `injectActorProps` - injects `Props` for the `Actor`, so that you can create new `Actor`s yourself with the help of the `ActorRef` factory.
 
-where `ActorRef` can be one of two things:
+where `ActorRef` factory can be one of two things:
 
 * `ActorContext` - it always implicitly available within an `Actor` and can be used to create a new actors in the context of current actor
 * `ActorSystem`
@@ -987,7 +986,7 @@ class Receptionist (implicit inj: Injector) extends Actor with AkkaInjectable {
 }
 {% endhighlight %}
 
-Or alternatively, if you want to create an actor somewhere else (not inside an actor), you need to provide an implicit `ActorSystem` in the scope:
+Or alternatively, if you want to create an actor somewhere else (not inside of an actor), you need to bring an implicit `ActorSystem` in the scope:
 
 {% highlight scala %}
 import scaldi.akka.AkkaInjectable._
@@ -1014,11 +1013,11 @@ class OrderModule extends Module {
 }
 {% endhighlight %}
 
-I would like to point out how `Actor` are bound. It is important, that you bind then with `toProvider` function.
+I would like to point out how `Actor` are bound. It is important, that you bind them with `toProvider` function.
 It will make sure, that Scaldi always creates new instances of the `Actor` classes when you injecting them
 with `injectActorRef` or `injectActorProps`. These two methods actually use Akka mechanisms to configure an actor
 instance under-the-hood, but the actor instance creation itself is always delegated to Scaldi.
-During this process, Akka requires the delegate to always create new instances of an actor, so by binding `Actor`s
+During this process, Akka requires a delegate to always create new instances of an actor, so by binding `Actor`s
 with `toProvider` you are fulfilling the protocol, that Akka implies.
 
 You can find a tutorial and an example akka application in Scaldi Akka Example ([GitHub]({{site.link.scaldi-akka-example-github}}), [Blog]({{site.link.scaldi-akka-example-blog}}), [Typesafe activator template]({{site.link.scaldi-akka-example-template}})).
