@@ -12,8 +12,8 @@
         <h4>Documentation</h4>
 
         <p><a href="{{"/learn/" | prepend: site.baseurl}}">Scaldi</a></p>
-        <p><a href="{{"/learn/#TODO" | prepend: site.baseurl}}">Scaldi Play</a></p>
-        <p><a href="{{"/learn/#TODO" | prepend: site.baseurl}}">Scaldi Akka</a></p>
+        <p><a href="{{"/learn/#play-integration" | prepend: site.baseurl}}">Scaldi Play</a></p>
+        <p><a href="{{"/learn/#akka-integration" | prepend: site.baseurl}}">Scaldi Akka</a></p>
       </div>
       <div class="col-md-3">
         <h4>API</h4>
@@ -48,3 +48,14 @@
 <script src="{{"/assets/js/angular.min.js" | prepend: site.baseurl}}"></script>
 <script src="{{"/assets/bootstrap/js/bootstrap.min.js" | prepend: site.baseurl}}"></script>
 <script src="{{"/assets/js/main.js" | prepend: site.baseurl}}"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', '{{site.ga-code}}', '{{site.domain}}');
+  ga('send', 'pageview');
+
+</script>

@@ -4,30 +4,43 @@
 $(function () {
   var animateHeader = "" + $(document.body).data('animate-header')
 
-  if (animateHeader === 'true') {
-    var headerShow = function () {
-      var y = $(this).scrollTop();
+  var headerShow = function () {
+    var y = $(this).scrollTop();
 
-      if (y > 10) {
-        $('.navbar-fixed-top').addClass("with-shadow");
-        $('.navbar-fixed-top .navbar-nav .active').removeClass("top-rounded");
-        $('.header-logo').fadeIn(300);
-        $('.header-description').fadeIn(300);
-      } else {
-        $('.navbar-fixed-top').removeClass("with-shadow");
-        $('.navbar-fixed-top .navbar-nav .active').addClass("top-rounded");
-        $('.header-logo').fadeOut(100);
-        $('.header-description').fadeOut(100);
-      }
+    if (y > 5) {
+      $('.navbar-fixed-top').addClass("with-shadow");
+      $('.navbar-fixed-top .navbar-nav .active').removeClass("top-rounded");
+      $('.header-logo').fadeIn(300);
+      $('.header-description').fadeIn(300);
+    } else {
+      $('.navbar-fixed-top').removeClass("with-shadow");
+      $('.navbar-fixed-top .navbar-nav .active').addClass("top-rounded");
+      $('.header-logo').fadeOut(100);
+      $('.header-description').fadeOut(100);
     }
+  }
 
+  var simpleHeaderShow = function () {
+    var y = $(this).scrollTop();
+
+    if (y > 5) {
+      $('.navbar-fixed-top').addClass("with-shadow");
+    } else {
+      $('.navbar-fixed-top').removeClass("with-shadow");
+    }
+  }
+
+  if (animateHeader === 'true') {
     $(document).scroll(headerShow)
     $(document).resize(headerShow)
   } else {
-    $('.navbar-fixed-top').addClass("with-shadow");
+    $('.navbar-fixed-top')
     $('.navbar-fixed-top .navbar-nav .active').removeClass("top-rounded");
     $('.header-logo').show();
     $('.header-description').show();
+
+    $(document).scroll(simpleHeaderShow)
+    $(document).resize(simpleHeaderShow)
   }
 
   var slagify = function (text) {
@@ -64,8 +77,7 @@ $(function () {
       this.offsets = $([])
       this.targets = $([])
 
-      var self     = this
-
+      var self = this
       this.$body
           .find(this.selector)
           // just wonder why it was here in the first place
@@ -125,12 +137,12 @@ $(function () {
       }
     })
 
-    var isNormalPage = $('.main-content').size() > 0
-
-    $('body').scrollspy({
-      target: '#' + top.attr('id'),
-      offset: isNormalPage ? 85 : 95 // magic number!!! do not touch
-    })
+    setTimeout(function () {
+      $('body').scrollspy({
+        target: '#' + top.attr('id'),
+        offset: 10
+      })
+    },100)
 
     $('a').each(function () {
       if (this.hostname !== window.location.hostname)
