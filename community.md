@@ -42,6 +42,6 @@ So please feel free to materialize you ideas in form of code and send pull reque
 
 ### Contribute to the Website
 
-If you would like to contribute to this website, then you can find the repo on the [GitHub]({{site.link.stack-overflow}}).
+If you would like to contribute to this website, then you can find the repo on the [GitHub]({{site.link.website}}).
 It uses [Jekyll]({{site.link.jekyll}}) and [gh-pages]({{site.link.ghpages}}).
 All URLs and versions are gathered in the <span class="class-name">_config.yml</span>.
