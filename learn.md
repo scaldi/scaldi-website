@@ -510,7 +510,8 @@ After this you can define a condition (only one, but you can combine several con
 bind [Server] when (inDevMode or inTestMode) to new HttpServer
 {% endhighlight %}
 
-you can find more information about the conditions in the [Conditions section](#conditions).
+If you provided several `when` conditions, then they would be combined with **and**.
+You can find more information about the conditions in the [Conditions section](#conditions).
 
 The actual value of the binding is bound with the different flavours of `to` word (if you prefer, you can use `in*` instead of `to*` syntax):
 
@@ -780,6 +781,18 @@ bind [Database] when (inDevMode or inTestMode) to new InMemoryDatabase
 {% endhighlight %}
 
 This gives you a lot of flexibility in the ways you can define the bindings.
+
+If you have several bindings that have exactly the same condition, then you can group them together in the `when` block like this:
+
+{% highlight scala %}
+when (inDevMode or inTestMode) {
+  bind [Database] to new Riak
+  bind [PaymentService] to new MockPaymentService
+}
+{% endhighlight %}
+
+This will add the same condition to every binding in the group. If binding itself also defines a condition, then the context context
+condition and the binding's conditions would be combined with **and**.
 
 Out of the box Scaldi comes with `SysPropCondition` which can enable/disable binding based on the system property:
 
