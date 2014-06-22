@@ -905,8 +905,8 @@ when (inDevMode or inTestMode) {
 }
 {% endhighlight %}
 
-This will add the same condition to every binding in the group. If binding itself also defines a condition, then the context context
-condition and the binding's conditions would be combined with **and**.
+This will add the same condition to every binding in the group. If binding itself also defines a condition, then the context
+condition and the binding's condition would be combined with **and**.
 
 Out of the box Scaldi comes with `SysPropCondition` which can enable/disable binding based on the system property:
 
