@@ -158,7 +158,7 @@ The resulting bindings have 2 [identifiers](#identifiers):
 * Class identifier which is the return type of the `def` or the type of `val`
 
 In some cases this can be pretty restrictive, because your bindings can't have have more identifiers or conditions associated with them.
-To prvide more flexibility Scaldi also allows you to return a `BindingProvider` from the member of the class instead of a regular type.
+To provide more flexibility Scaldi also allows you to return a `BindingProvider` from the member of the class instead of a regular type.
 Here is how it looks like:
 
 {% highlight scala %}
@@ -845,7 +845,7 @@ Biding lookup happens from left to right, so the binding for the `mocksModule` w
 As you can see in this example, I used `def` to define `mocksModule` and I also created a fresh instance of the `AppModule`. This is
 important, because they both are mutable so they have a lifecycle associated with them. If I will make and `object` from the `AppModule`
 (instead of `class`), then it will not work correctly if you have more than one test that creates `testModule`, because the injector
-aggregation will try to initialize it once aging when `Database` is injected, which is wrong. If you want to reuse an initialised
+aggregation will try to initialize it once again when `Database` is injected, which is wrong. If you want to reuse an initialised
 injector, then you need guard it with an immutable injector as described in the
 ["Implementing Scoped Bindings" section](#implementing-scoped-bindings) (but in this case you can't override the bindings) or you can
 simply create a new instance of injector as described in the example above.
@@ -999,7 +999,7 @@ val receptionist = injectActorRef [Receptionist]
 {% endhighlight %}
 
 We have created some actors that are able to use `inject`. The only thing that remains now is to create a module that binds them together
-with other dependencies and the `ActorSysyem` itself:
+with other dependencies and the `ActorSystem` itself:
 
 {% highlight scala %}
 class OrderModule extends Module {
