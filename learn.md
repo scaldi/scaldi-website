@@ -598,6 +598,28 @@ bind [Server] to new HttpServer destroyWith (_.shutdown())
 The bindings are destroyed together with the `Injector` in which they are defined. The initialization depends on
 the binding type, but in general it is initialized as soon as new instance of binding is created and before it is injected.
 
+### Generics Support
+
+You can also bind things like functions, lists or maps. In other words Scaldi understands generic types and will correctly inject them:
+
+{% highlight scala %}
+binding identifiedBy "intAdder" to
+  ((a: Int, b: Int) => a + b)
+
+binding identifiedBy "mapping" to Map(
+  "scala" -> "http://scala-lang.org",
+  "play" -> "http://www.playframework.com",
+  "akka" -> "http://akka.io"
+)
+{% endhighlight %}
+
+Here is an example how you can inject them:
+
+{% highlight scala %}
+val intAdder = inject [(Int, Int) => Int]
+val mapping = inject [Map[String, String]]
+{% endhighlight %}
+
 ### Custom Bindings
 
 When you are creating you own `Injector`s, you also have opportunity to create your own types of bindings by implementing one of two traits:
