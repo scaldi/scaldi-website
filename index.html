@@ -222,6 +222,25 @@ class MyModule extends Module {
         </a>
       </div>
       <div class="col-md-6">
+        <h3>Testing</h3>
+        <p>You can override bindings in order to mock parts of the application</p>
+        <p>
+{% highlight scala %}
+def mocksModule = new Module {
+  bind [Database] to new InMemoryDb
+}
+
+implicit val testModule = mocksModule :: appModule
+{% endhighlight %}
+        </p>
+        <a role="button" href="{{"/learn/#testing" | prepend: site.baseurl}}">
+        <span>Learn more about testing</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
         <h3>Conditions</h3>
         <p>Bindings may have conditions associated with them</p>
         <p>
@@ -248,25 +267,7 @@ def inDevMode(implicit inj: Injector) = {
           <span>Learn more about conditions</span>
         </a>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="col-md-6">
-        <h3>Testing</h3>
-        <p>You can override bindings in order to mock parts of the application</p>
-        <p>
-{% highlight scala %}
-def mocksModule = new Module {
-  bind [Database] to new InMemoryDb
-}
-
-implicit val testModule = mocksModule :: appModule
-{% endhighlight %}
-        </p>
-        <a role="button" href="{{"/learn/#testing" | prepend: site.baseurl}}">
-        <span>Learn more about testing</span>
-        </a>
-      </div>
       <div class="col-md-6">
         <h3>Extensibility</h3>
         <p>Extend almost any part of the library, including</p>
