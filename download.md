@@ -9,8 +9,8 @@ title: Scaldi Downloads
 The latest version of the library is [{{site.version.scaldi}}]({{site.link.scaldi-releases}}).
 You can view and download the sources directly from the [GitHub repo]({{site.link.scaldi-github}}).
 If you want want to download jars, then please do so directly from the [maven central]({{site.link.scaldi-maven}}).
-Scaldi is cross-compiled with Scala version <span class="class-name">2.10</span> and <span class="class-name">2.11</span>.
-Below is a quick summary for every library.
+Scaldi is cross-compiled with Scala version **2.10** and **2.11**.
+Starting from version **0.4** Scaldi only compiled with Scala version **2.11**. Below is a quick summary for every library.
 
 ### scaldi
 
@@ -18,7 +18,7 @@ Below is a quick summary for every library.
   <dt>GitHub</dt><dd><a target="_blank" href="{{site.link.repo.scaldi}}">scaldi</a></dd>
   <dt>Latest version</dt><dd><a target="_blank" href="{{site.link.scaldi-releases}}">{{site.version.scaldi}}</a></dd>
   <dt>Maven central</dt><dd>
-    for scala <a target="_blank" href="{{site.link.maven.scaldi}}2.10%7C{{site.version.scaldi}}%7Cjar">2.10</a> and
+    for scala <a target="_blank" href="{{site.link.maven.scaldi}}2.10%7C{{site.version-210.scaldi}}%7Cjar">2.10</a> and
     <a target="_blank" href="{{site.link.maven.scaldi}}2.11%7C{{site.version.scaldi}}%7Cjar">2.11</a>
   </dd>
 </dl>
@@ -35,7 +35,7 @@ libraryDependencies += "org.scaldi" %% "scaldi" % "{{site.version.scaldi}}"
   <dt>GitHub</dt><dd><a target="_blank" href="{{site.link.repo.scaldi-play}}">scaldi-play</a></dd>
   <dt>Latest version</dt><dd><a target="_blank" href="{{site.link.scaldi-play-releases}}">{{site.version.scaldi-play}}</a></dd>
   <dt>Maven central</dt><dd>
-    for scala <a target="_blank" href="{{site.link.maven.scaldi-play}}2.10%7C{{site.version.scaldi-play}}%7Cjar">2.10</a> and
+    for scala <a target="_blank" href="{{site.link.maven.scaldi-play}}2.10%7C{{site.version-210.scaldi-play}}%7Cjar">2.10</a> and
     <a target="_blank" href="{{site.link.maven.scaldi-play}}2.11%7C{{site.version.scaldi-play}}%7Cjar">2.11</a>
   </dd>
 </dl>
@@ -55,7 +55,7 @@ It also an activator template which you can find [here]({{site.link.scaldi-play-
   <dt>GitHub</dt><dd><a target="_blank" href="{{site.link.repo.scaldi-akka}}">scaldi-akka</a></dd>
   <dt>Latest version</dt><dd><a target="_blank" href="{{site.link.scaldi-akka-releases}}">{{site.version.scaldi-akka}}</a></dd>
   <dt>Maven central</dt><dd>
-    for scala <a target="_blank" href="{{site.link.maven.scaldi-akka}}2.10%7C{{site.version.scaldi-akka}}%7Cjar">2.10</a> and
+    for scala <a target="_blank" href="{{site.link.maven.scaldi-akka}}2.10%7C{{site.version-210.scaldi-akka}}%7Cjar">2.10</a> and
     <a target="_blank" href="{{site.link.maven.scaldi-akka}}2.11%7C{{site.version.scaldi-akka}}%7Cjar">2.11</a>
   </dd>
 </dl>

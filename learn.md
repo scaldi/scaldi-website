@@ -510,7 +510,8 @@ After this you can define a condition (only one, but you can combine several con
 bind [Server] when (inDevMode or inTestMode) to new HttpServer
 {% endhighlight %}
 
-you can find more information about the conditions in the [Conditions section](#conditions).
+If you provided several `when` conditions, then they would be combined with **and**.
+You can find more information about the conditions in the [Conditions section](#conditions).
 
 The actual value of the binding is bound with the different flavours of `to` word (if you prefer, you can use `in*` instead of `to*` syntax):
 
@@ -596,6 +597,28 @@ bind [Server] to new HttpServer destroyWith (_.shutdown())
 
 The bindings are destroyed together with the `Injector` in which they are defined. The initialization depends on
 the binding type, but in general it is initialized as soon as new instance of binding is created and before it is injected.
+
+### Generics Support
+
+You can also bind things like functions, lists or maps. In other words Scaldi understands generic types and will correctly inject them:
+
+{% highlight scala %}
+binding identifiedBy "intAdder" to
+  ((a: Int, b: Int) => a + b)
+
+binding identifiedBy "mapping" to Map(
+  "scala" -> "http://scala-lang.org",
+  "play" -> "http://www.playframework.com",
+  "akka" -> "http://akka.io"
+)
+{% endhighlight %}
+
+Here is an example how you can inject them:
+
+{% highlight scala %}
+val intAdder = inject [(Int, Int) => Int]
+val mapping = inject [Map[String, String]]
+{% endhighlight %}
 
 ### Custom Bindings
 
@@ -724,6 +747,100 @@ one/several modules and then compose them with the rest of the application modul
 will make sure, that defaults are defined only once.
 {% include cend.html %}
 
+## Constructor Injection
+
+Scaldi supports constructor injection with `injected` macro:
+
+{% highlight scala %}
+class TokenRepo(db: Database, metrics: Metrics) extends Tokens {
+  // ...
+}
+
+def tokenModule = new Module {
+  bind [Tokens] to injected [TokenRepo]
+
+  bind [Database] to new Riak
+  bind [Metrics] identifiedBy 'statsd to new Statsd
+}
+{% endhighlight %}
+
+`injected` will create a new instance of the `TokenRepo` class and inject all constructor arguments. Here is how the end result will look like:
+
+{% highlight scala %}
+bind [Tokens] to new TokenRepo(db = inject [Database], metrics = inject [Metrics])
+{% endhighlight %}
+
+### Multiple Argument Lists
+
+`injected` also supports multiple argument lists:
+
+{% highlight scala %}
+class TokenRepo(db: Database, metrics: Metrics)(users: UserService)(timeout: Duration) extends Tokens {
+  // ...
+}
+
+def tokenModule = new Module {
+  bind [Tokens] to injected [TokenRepo]
+
+  // ...
+}
+{% endhighlight %}
+
+This produces following code:
+
+{% highlight scala %}
+bind [Tokens] to new TokenRepo(db = inject [Database], metrics = inject [Metrics])(users = inject [UserService])(timeout = inject [Duration])
+{% endhighlight %}
+
+### Overriding on Argument Level
+
+Sometimes it's not enough to just inject based on the type. In this example we have two candidates for `timeout` and the last of them would
+be injected, which is suboptimal:
+
+{% highlight scala %}
+class HttpClient(basePath: String, timeout: Duration) extends Tokens {
+  // ...
+}
+
+def tokenModule = new Module {
+  bind [Tokens] to injected [TokenRepo]
+
+  binding identifiedBy 'path to "http://localhost/"
+
+  bind [Duration] identifiedBy 'http and 'connection to 10.seconds
+  bind [Duration] identifiedBy 'database and 'connection to 20.seconds
+}
+{% endhighlight %}
+
+`injected` accept a list of tuples, which allows you to override the injection behaviour for some arguments.
+In this case you need to override the injected argument like this:
+
+{% highlight scala %}
+bind [Tokens] to injected [TokenRepo] ('timeout -> inject [Duration] (identified by 'http))
+{% endhighlight %}
+
+The argument name can be a `Symbol` like shown in example above or a `String`. If you made a mistake and injected the wrong type or
+misspelled the argument name, then application will not compile (since `injected` is a macro and will produce an error at compile time).
+
+### Default Arguments
+
+`injected` also respects default arguments *in the first argument list*. It will use default value if it can't find the binding to inject.
+Here is a small example:
+
+{% highlight scala %}
+class TokenRepo(db: Database, timeout: Duration = 10.seconds) extends Tokens {
+  // ...
+}
+
+def tokenModule = new Module {
+  bind [Tokens] to injected [TokenRepo]
+
+  bind [Database] to new Riak
+}
+{% endhighlight %}
+
+`TokenRepo` will get a new instance of `Riak` for the `db` argument anf the `timeout` would be `10.seconds`.
+
 ### Constructor Injection vs Implicit Injector
 
 Generally you can take two approaches when it comes to the injection of dependencies.
@@ -744,9 +861,7 @@ class AppModule extends Module {
 }
 {% endhighlight %}
 
-Scaldi do not provide any mechanism to "magically" inject `repo` and `metrics` when `UserService` is instantiated.
-Generally it can be a good idea to provide some kind of safe mechanism for this, so maybe in future Scaldi will get a macro
-that will automatically initialize constructor arguments for you.
+alternatively you can use `injected` macro which is described in the previous sections.
 
 Another approach would be to bring the implicit injector instance in scope of class and do injection directly there:
 
@@ -780,6 +895,18 @@ bind [Database] when (inDevMode or inTestMode) to new InMemoryDatabase
 {% endhighlight %}
 
 This gives you a lot of flexibility in the ways you can define the bindings.
+
+If you have several bindings that have exactly the same condition, then you can group them together in the `when` block like this:
+
+{% highlight scala %}
+when (inDevMode or inTestMode) {
+  bind [Database] to new Riak
+  bind [PaymentService] to new MockPaymentService
+}
+{% endhighlight %}
+
+This will add the same condition to every binding in the group. If binding itself also defines a condition, then the context context
+condition and the binding's conditions would be combined with **and**.
 
 Out of the box Scaldi comes with `SysPropCondition` which can enable/disable binding based on the system property:
 
