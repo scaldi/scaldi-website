@@ -208,14 +208,14 @@ def tokenModule = new Module {
         <h3>Binding Lifecycle</h3>
         <p>Bindings may have lifecycle</p>
         <p>
-          {% highlight scala %}
-          class MyModule extends Module {
-          bind [ActorSystem] to
-          ActorSystem("ScaldiExample") destroyWith (_.shutdown())
+{% highlight scala %}
+class MyModule extends Module {
+  bind [ActorSystem] to
+  ActorSystem("ScaldiExample") destroyWith (_.shutdown())
 
-          bind [Database] to new Mongo initWith (_.start())
-          }
-          {% endhighlight %}
+  bind [Database] to new Mongo initWith (_.start())
+}
+{% endhighlight %}
         </p>
         <a role="button" href="{{"/learn/#binding-lifecycle" | prepend: site.baseurl}}">
         <span>Learn more about lifecycle</span>
@@ -255,13 +255,13 @@ def inDevMode(implicit inj: Injector) = {
         <h3>Testing</h3>
         <p>You can override bindings in order to mock parts of the application</p>
         <p>
-          {% highlight scala %}
-          def mocksModule = new Module {
-          bind [Database] to new InMemoryDb
-          }
+{% highlight scala %}
+def mocksModule = new Module {
+  bind [Database] to new InMemoryDb
+}
 
-          implicit val testModule = mocksModule :: appModule
-          {% endhighlight %}
+implicit val testModule = mocksModule :: appModule
+{% endhighlight %}
         </p>
         <a role="button" href="{{"/learn/#testing" | prepend: site.baseurl}}">
         <span>Learn more about testing</span>
