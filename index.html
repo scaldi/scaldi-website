@@ -178,7 +178,7 @@ def appModule = tokenModule :: dbModule
       </div>
       <div class="col-md-6">
         <h3>Constructor Injection</h3>
-        <p>Scaldi provides an <span class="class-name">injected</span> macro, which will fill all constructor arguments for you:</p>
+        <p>Scaldi provides an <span class="class-name">injected</span> macro, which will inject all constructor arguments for you:</p>
         <p>
 {% highlight scala %}
 class TokenRepo(db: Database, met: Metrics) extends Tokens
