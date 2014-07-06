@@ -1033,6 +1033,22 @@ internal mechanisms for it.
 
 You can find a tutorial and an example play application in Scaldi Play Example ([GitHub]({{site.link.scaldi-play-example-github}}), [Blog]({{site.link.scaldi-play-example-blog}}), [Typesafe activator template]({{site.link.scaldi-play-example-template}})).
 
+### Play-specific Injectors
+
+Within a Play application you can add `ControllerInjector` which will create controller bindings on the fly, which means, that you don't need to
+create then explicitly by yourself:
+
+{% highlight scala %}
+object Global extends GlobalSettings with ScaldiSupport {
+  def applicationModule = new UserModule :: new DbModule :: new ControllerInjector
+}
+{% endhighlight %}
+
+Controller class should meet following requirements to be available for the `ControllerInjector`:
+
+* It should extend `play.api.mvc.Controller`
+* It should have no-argument constructor or a constructor that takes and implicit `Injector` as an argument
+
 ### Play-specific Bindings
 
 Play support also makes following bindings automatically available for you to inject:
