@@ -197,12 +197,14 @@ Injectable.inject[Server] should equal (HttpServer("test-prop", 54321))
 All properties are available as bindings and each property has only one string identifier and it's the name of the property.
 The type of the binding is defined on the inject side. You can inject following types:
 
+* String
 * Int
+* Long
 * Float
 * Double
 * Boolean
 * File
-* String
+* Duration
 
 In addition to `PropertiesInjector` you can also use `SystemPropertiesInjector` which, as you can imagine,
 allows you to inject system properties. In fact both these classes extend `RawInjector`, which allows you
