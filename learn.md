@@ -49,6 +49,11 @@ Other injectors have more specific role and serve as a wrapper for other injecto
 From the other hand injectors have also another property - every injector can be either **mutable** or **immutable**. These two types are differ in the
 way [lifecycle](#injector-lifecycle) and [injector composition](#injector-composition) works. Next sections will describe it in more detail.
 
+This section describes the set of standard injectors. There are also other, more specialised, injectors available in other parts of this documentation:
+
+* Play-specific injectors are described in the ["Play integration" section](#play-integration)
+* JSR 330 injectors are described in the ["JSR 330 Support" section](#jsr-330-support)
+
 ### Injector Lifecycle
 
 Immutable injectors don't have any lifecycle associated with them.
@@ -510,6 +515,47 @@ trait CanBeIdentifier[T] {
 
 So if you want some existing class to be treated as an identifier, then you need to provide an implicit instance of `CanBeIdentifier` in scope.
 
+[JSR 330 support](#jsr-330-support) also defines some additional identifies, so please visit [correspondent section](#jsr-330-support) to
+find more information about it.
+
+### Required Identifiers
+
+`Identifier` can be marked as required, which would mean, that during injection this identifier must be used in order to get this binding.
+By default all built-in identifiers are not required (except `AnnotationIdentifier` which described in more detail in ["JSR 330 Support" section](#jsr-330-support)).
+
+This can be useful if you want to make sure that particular identifier is used regardless of the binding definition order. Binding DSL
+provides following 2 functions to override default required value of identifier:
+
+* `required(<identifier>)` - makes identifier required
+* `notRequired(<identifier>)` - makes identifier not required
+
+Let's look at simple example that uses non-required identifiers (which is the default for string identifier, as mentioned earlier):
+
+{% highlight scala %}
+implicit val injector = new Module {
+  bind [DB] to new NormalDb
+  bind [DB] identifiedBy 'experimental to new ExperimentalDb
+}
+
+val db = inject [DB] // injected db will be ExperimentalDb
+{% endhighlight %}
+
+As you see, the `ExperimentalDb` will be injected simply because it's binding defined after `NormalDb` and will override it in this particular
+case.
+
+We can use `required` function in order to make sure, that `ExperimentalDb` injected only when client code explicitly asked for it with `'experimental`
+identifier:
+
+{% highlight scala %}
+implicit val injector = new Module {
+  bind [DB] to new NormalDb
+  bind [DB] identifiedBy required('experimental) to new ExperimentalDb
+}
+
+val db = inject [DB] // NormalDb
+val dangerousDb = inject [DB] ('experimental) // ExperimentalDb
+{% endhighlight %}
+
 ## Define Bindings
 
 Scaldi provides a biding DSL which you can you can use inside of the `Module`. Here is an example of how you can create the bindings:
@@ -554,12 +600,15 @@ The actual value of the binding is bound with the different flavours of `to` wor
 
 all types of the bindings are described in more detail in the next sections.
 
-Finally you can specify a lifecycle callbacks with `initWith`/`destroyWith` words which take a function `T => Unit` as an argument, where
+You can specify a lifecycle callbacks with `initWith`/`destroyWith` words which take a function `T => Unit` as an argument, where
 `T` is the type of the binding:
 
 {% highlight scala %}
 bind [Server] to new HttpServer initWith (_.init()) destroyWith (_.shutdown())
 {% endhighlight %}
+
+Identifiers, that are used to define a binding, can be marked as `required`/`notRequired` in order to influence the lookup mechanism
+during the injection. More information about this feature can be found in the ["Required Identifiers" section](#required-identifiers).
 
 ### Binding Overrides
 
@@ -1197,3 +1246,72 @@ During this process, Akka requires a delegate to always create new instances of 
 with `toProvider` you are fulfilling the protocol, that Akka implies.
 
 You can find a tutorial and an example akka application in Scaldi Akka Example ([GitHub]({{site.link.scaldi-akka-example-github}}), [Blog]({{site.link.scaldi-akka-example-blog}}), [Typesafe activator template]({{site.link.scaldi-akka-example-template}})).
+
+### Singleton Actors
+
+In some cases you may want to create a singleton actors - they will be created and bond once and then injected in other actors that want to work with them.
+
+Generally I would recommend to create actors within another actors and then send references around to propagate them to all places that
+want to use this actor ref, because in most cases you also need to take care of proper actor supervision hierarchy.
+
+But If you have some singleton actors that are sitting under the system guardian's supervision then what you can do is to create another
+binding that will create an actor ref for the singleton actor:
+
+{% highlight scala %}
+binding identifiedBy 'someSingletonActor to {
+  implicit val system = inject [ActorSystem]
+
+  AkkaInjectable.injectActorRef [Receptionist]
+}
+{% endhighlight %}
+
+then you can just `inject` it in other actors as normal:
+
+{% highlight scala %}
+inject [ActorRef] ('someSingletonActor)
+{% endhighlight %}
+
+You can improve it a little bit by creating a custom `Identifier` for it instead of using a symbol or string.
+
+## JSR 330 Support
+
+Scaldi implements [JSR 330 (Dependency Injection for Java)](https://jcp.org/en/jsr/detail?id=330) spec. This allows you to bind
+JSR 330 annotated classes and inject scaldi bindings from them. From the optional part of JSR 330 spec, only private member injection is
+supported (which means that static injection is not supported).
+
+In order to bind JSR 330 annotated class you can use `annotated` syntax when you are defining a binding:
+
+{% highlight scala %}
+bind [Engine] to annotated [V8Engine]
+{% endhighlight %}
+
+This will define a new `AnnotationBinding` which itself is a `BindingWithLifecycle`. If `V8Engine` has a `javax.inject.Singleton` scope annotation,
+then the binding would behave like a scaldi's `LazyBinding` otherwise it will behave like `ProviderBinding`.
+
+The only supported JSR 330 scope is a `javax.inject.Singleton` scope. Custom scope annotations are not supported and will result in `BindingException`.
+
+Scaldi also supports `javax.inject.Named` as well as any other custom `javax.inject.Qualifier` annotation. `javax.inject.Named` qualifier
+is treated as normal `StringIdentifier`. Any other custom qualifier would become an `AnnotationIdentifier`. In order to define a
+binding with `AnnotationIdentifier` you can use a `qualifier` function available in `scaldi.jsr330` package:
+
+{% highlight scala %}
+import scaldi.jsr330._
+
+bind [Seat] identifiedBy qualifier [Drivers] to annotated [DriversSeat]
+{% endhighlight %}
+
+`AnnotationIdentifier` is a required by default, which means that you must use it when you are injecting the binding
+(see ["Required Identifiers" section](#required-identifiers) fro more details). If you want to make a standard identifier required (like `StringIdentifier`),
+you need to use `required` function with this identifier:
+
+{% highlight scala %}
+bind [Tire] identifiedBy required('spare) to annotated [SpareTire]
+{% endhighlight %}
+
+JSR 330 support also provides `OnDemandAnnotationInjector` which defines JSR 330 compliant bindings on-the-fly (when they are injected).
+
+{% include ext.html type="info" title="Intended for integration" %}
+JSR 330 support can be very helpful for integration with other libraries and frameworks. It also useful during the migration as you move your existing
+codebase to scaldi, assuming that you used another JSR 330 compatible DI library (like Google Guice). If you are starting from scratch or
+don't need this kind integration, then I would recommend to avoid JSR 330 annotations and use normal [binding DSL](#define-bindings).
+{% include cend.html %}
