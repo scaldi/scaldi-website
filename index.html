@@ -267,7 +267,50 @@ def inDevMode(implicit inj: Injector) = {
           <span>Learn more about conditions</span>
         </a>
       </div>
+      <div class="col-md-6">
+        <h3>Generics</h3>
+        <p>You can bind things like functions, lists or maps</p>
+        <p>
+{% highlight scala %}
+binding identifiedBy "intAdder" to
+  ((a: Int, b: Int) => a + b)
 
+binding identifiedBy "mapping" to Map(
+  "scala" -> "http://scala-lang.org",
+  "play" -> "http://www.playframework.com",
+  "akka" -> "http://akka.io"
+)
+{% endhighlight %}
+        </p>
+        <p>and then inject them</p>
+        <p>
+{% highlight scala %}
+val intAdder = inject [(Int, Int) => Int]
+val mapping = inject [Map[String, String]]
+{% endhighlight %}
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <h3>JSR 330 Support</h3>
+        <p>For seamless integration with other libraries or existing codebase.</p>
+        <p>
+{% highlight scala %}
+def carModule = new Module {
+  bind [Car] to annotated [Convertible]
+  bind [Seat] identifiedBy qualifier [Drivers]
+    to annotated [DriversSeat]
+}
+
+implicit val injector =
+  carModule :: new OnDemandAnnotationInjector
+
+val car = inject [Car]
+{% endhighlight %}
+        </p>
+      </div>
       <div class="col-md-6">
         <h3>Extensibility</h3>
         <p>Extend almost any part of the library, including</p>
