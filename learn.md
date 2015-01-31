@@ -41,7 +41,7 @@ trait Injector {
 {% endhighlight %}
 
 Out of the box Scaldi comes with several different types of `Injector`s. Most of the implementations contain the actual bindings and
-provide a DSL to define them (e.g. `Module`, `StaticModule`, `PropertyInjector`).
+provide a DSL to define them (e.g. `Module`, `PropertyInjector`).
 Other injectors have more specific role and serve as a wrapper for other injectors or as an integration point between Scaldi and other libraries.
 `PropertyInjector` or `PlayConfigurationInjector` are examples of such `Injector`s.
 `Injector` itself is used by the `inject` function (which takes an `Injector` as an implicit argument) to inject these bindings.
@@ -136,6 +136,11 @@ implicit val injector = DynamicModule({ module =>
 {% endhighlight %}
 
 ### StaticModule
+
+{% include ext.html type="danger" title="Deprecated (since v0.5)" %}
+`StaticModule` is deprecated and will be removed soon. As an alternative you can use `ImmutableWrapper` injector to
+define an immutability boundary in composition or create your own injector that is marked as `ImmutableInjector`
+{% include cend.html %}
 
 `StaticModule` is an immutable injector that allows you to define binding as `def`s, `val`s and `lazy val`s in the body of the subclass:
 
@@ -432,7 +437,7 @@ Here is the list of some of the traits that you can mix-in in your own `Injector
     JVM shutdown. The implementation is idempotent and thread-safe.
 * `Injectable` - provides [injection DSL](#inject-bindings) in body of the subclasses (similar to what `Module` allows you to do, if you extend it)
 * `WordBinder` - provides [binding DSL](#define-bindings) in body of the subclasses (similar to what `Module` allows you to do, if you extend it)
-* `ReflectionBinder` - gathers all `val`s, `def`s and `lazy val`s in the body of the subclasses and exposes them as a bindings (similar to what `StaticModule` allows you to do, if you extend it)
+* `ReflectionBinder` - <span class="label label-danger">deprecated</span> gathers all `val`s, `def`s and `lazy val`s in the body of the subclasses and exposes them as a bindings (similar to what `StaticModule` allows you to do, if you extend it)
 
 ## Identifiers
 
