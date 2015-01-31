@@ -211,14 +211,14 @@ Injectable.inject[Server] should equal (HttpServer("test-prop", 54321))
 All properties are available as bindings and each property has only one string identifier and it's the name of the property.
 The type of the binding is defined on the inject side. You can inject following types:
 
-* String
-* Int
-* Long
-* Float
-* Double
-* Boolean
-* File
-* Duration
+* `String`
+* `Int`
+* `Long`
+* `Float`
+* `Double`
+* `Boolean`
+* `File`
+* `Duration`
 
 In addition to `PropertiesInjector` you can also use `SystemPropertiesInjector` which, as you can imagine,
 allows you to inject system properties. In fact both these classes extend `RawInjector`, which allows you
@@ -230,6 +230,35 @@ class PlayConfigurationInjector(app: => Application) extends RawInjector {
   def getRawValue(name: String) = app.configuration.getString(name)
 }
 {% endhighlight %}
+
+### Typesafe Config Injector
+
+[Typesafe config](https://github.com/typesafehub/config) is natively supported via `TypesafeConfigInjector`.
+It is immutable injector and allow you to add bindings from a typesafe config. It is vary similar to `PropertiesInjector`
+but it supports much more different property types (generally it supports all property types supported by typesafe config itself):
+
+* `Int`
+* `List[Int]`
+* `Integer`
+* `List[Integer]`
+* `Long`
+* `List[Long]`
+* `Double`
+* `List[Double]`
+* `Boolean`
+* `List[Boolean]`
+* `File`
+* `List[File]`
+* `Duration`
+* `List[Duration]`
+* `String`
+* `List[String]`
+* `Config`
+* `List[Config]`
+* `ConfigValue`
+* `ConfigList`
+* `ConfigObject`
+* `List[ConfigObject]`
 
 ### Injector Composition
 
