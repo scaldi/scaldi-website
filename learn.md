@@ -135,6 +135,15 @@ implicit val injector = DynamicModule({ module =>
 })
 {% endhighlight %}
 
+### ImmutableWrapper
+
+`ImmutableWrapper` is very simple implementation of an injector that just delegates the binding lookup to some other injector that is provided
+to it as an argument. `ImmutableWrapper` is an `ImmutableInjector`. This means that it will guard `delegate` from any lifecycle of the parent
+composition, if it gets composed with another injector. It also will know nothing about the final composition,
+because it is immutable, so it only able to contribute it's bindings to the composition, but not aware of it at all.
+
+More information `ImmutableWrapper` and example of it's usage can be found in ["Implementing Scoped Bindings" section](#implementing-scoped-bindings).
+
 ### StaticModule
 
 {% include ext.html type="danger" title="Deprecated (since v0.5)" %}
@@ -323,20 +332,8 @@ From the other hand, you can easily achieve very similar behaviour just by using
 Here I would like to show you a small example of how you can define a scoped bindings and isolate them from the rest of the bindings
 by creating some kind of a sandbox for them.
 
-In order to be able to do this, we need to define the sandbox itself first:
-
-{% highlight scala %}
-class ImmutableWrapper(delegate: Injector) extends Injector with ImmutableInjector {
-  def getBinding(identifiers: List[Identifier]): Option[Binding] =
-    delegate.getBinding(identifiers)
-
-  def getBindings(identifiers: List[Identifier]): List[Binding] =
-    delegate.getBindings(identifiers)
-}
-{% endhighlight %}
-
-Here we define a very simple implementation of an injector, that just delegates the binding lookup to some other injector
-(`delegate` in this case). The important thing to notice here is that `ImmutableWrapper` is an `ImmutableInjector`. This means that it
+`ImmutableWrapper` is very simple implementation of an injector that just delegates the binding lookup to some other injector that is provided
+to it as an argument. The important thing to notice here is that `ImmutableWrapper` is an `ImmutableInjector`. This means that it
 will guard `delegate` from any lifecycle of the parent composition, if it gets composed with another injector. It also will know nothing about
 the final composition, because it is immutable, so it only able to contribute it's bindings to the composition, but not aware of it at all.
 
@@ -520,7 +517,7 @@ bind [Server] when (inDevMode or inTestMode) to new HttpServer
 If you provided several `when` conditions, then they would be combined with **and**.
 You can find more information about the conditions in the [Conditions section](#conditions).
 
-The actual value of the binding is bound with the different flavours of `to` word (if you prefer, you can use `in*` instead of `to*` syntax):
+The actual value of the binding is bound with the different flavours of `to` word:
 
 * `to` - defines a lazy binding
 * `toNonLazy` - defines a non-lazy binding
