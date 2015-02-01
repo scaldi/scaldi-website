@@ -1285,9 +1285,12 @@ Scaldi implements [JSR 330 (Dependency Injection for Java)](https://jcp.org/en/j
 JSR 330 annotated classes and inject scaldi bindings from them. From the optional part of JSR 330 spec, only private member injection is
 supported (which means that static injection is not supported).
 
-In order to bind JSR 330 annotated class you can use `annotated` syntax when you are defining a binding:
+In order to bind JSR 330 annotated class you can use `annotated` syntax when you are defining a binding (all JSR 330 support resides in the
+`scaldi.jsr330` package):
 
 {% highlight scala %}
+import scaldi.jsr330._
+
 bind [Engine] to annotated [V8Engine]
 {% endhighlight %}
 
