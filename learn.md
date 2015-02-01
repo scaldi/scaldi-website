@@ -265,6 +265,12 @@ but it supports much more different property types (generally it supports all pr
 * `ConfigObject`
 * `List[ConfigObject]`
 
+### Simple Container Injector
+
+`SimpleContainerInjector` is very simple implementation of injector that allows you to just provide the list of bindings as an argument. It actually takes
+a function `Injector => List[BindingWithLifecycle]` as an argument, so that you are able to create a list of bindings based on the final
+injector composition.
+
 ### Injector Composition
 
 Scaldi also allows you to compose injectors together with `::` or `++` operators:
