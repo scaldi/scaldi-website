@@ -1293,6 +1293,12 @@ You can improve it a little bit by creating a custom `Identifier` for it instead
 
 ## JSR 330 Support
 
+{% include ext.html type="info" title="Intended for integration" %}
+JSR 330 support can be very helpful for integration with other libraries and frameworks. It also useful during the migration as you move your existing
+codebase to scaldi, assuming that you used another JSR 330 compatible DI library (like Google Guice). If you are starting from scratch or
+don't need this kind integration, then I would recommend to avoid JSR 330 annotations and use normal [Binding DSL](#define-bindings).
+{% include cend.html %}
+
 Scaldi implements [JSR 330 (Dependency Injection for Java)](https://jcp.org/en/jsr/detail?id=330) spec. This allows you to bind
 JSR 330 annotated classes and inject scaldi bindings from them. From the optional part of JSR 330 spec, only private member injection is
 supported (which means that static injection is not supported).
@@ -1311,6 +1317,10 @@ then the binding would behave like a scaldi's `LazyBinding` otherwise it will be
 
 The only supported JSR 330 scope is a `javax.inject.Singleton` scope. Custom scope annotations are not supported and will result in `BindingException`.
 
+JSR 330 support also provides `OnDemandAnnotationInjector` which defines JSR 330 compliant bindings on-the-fly (when they are injected).
+
+### Qualifier Annotations
+
 Scaldi also supports `javax.inject.Named` as well as any other custom `javax.inject.Qualifier` annotation. `javax.inject.Named` qualifier
 is treated as normal `StringIdentifier`. Any other custom qualifier would become an `AnnotationIdentifier`. In order to define a
 binding with `AnnotationIdentifier` you can use a `qualifier` function available in `scaldi.jsr330` package:
@@ -1321,6 +1331,26 @@ import scaldi.jsr330._
 bind [Seat] identifiedBy qualifier [Drivers] to annotated [DriversSeat]
 {% endhighlight %}
 
+In some cases you need to bind and instance of `Annotation` instead of just type. This can come in handy when your `Qualifier` annotations have fields.
+`annotation` function allows you to do it like this:
+
+{% highlight scala %}
+import scaldi.jsr330._
+
+binding identifiedBy annotation(SomeQualifierImpl.of("foo")) to new SomeDep
+{% endhighlight %}
+
+In this example result `SomeQualifierImpl.of()` must return an instance of a class that implements some annotation interface.
+
+Of course you can also use the same syntax when you are injecting them:
+
+{% highlight scala %}
+import scaldi.jsr330._
+
+val someDep = inject [SomeDep] (identified by annotation(SomeQualifierImpl.of("foo")))
+val seat = inject [Seat] (identified by qualifier[Drivers])
+{% endhighlight %}
+
 `AnnotationIdentifier` is a required by default, which means that you must use it when you are injecting the binding
 (see ["Required Identifiers" section](#required-identifiers) fro more details). If you want to make a standard identifier required (like `StringIdentifier`),
 you need to use `required` function with this identifier:
@@ -1328,11 +1358,3 @@ you need to use `required` function with this identifier:
 {% highlight scala %}
 bind [Tire] identifiedBy required('spare) to annotated [SpareTire]
 {% endhighlight %}
-
-JSR 330 support also provides `OnDemandAnnotationInjector` which defines JSR 330 compliant bindings on-the-fly (when they are injected).
-
-{% include ext.html type="info" title="Intended for integration" %}
-JSR 330 support can be very helpful for integration with other libraries and frameworks. It also useful during the migration as you move your existing
-codebase to scaldi, assuming that you used another JSR 330 compatible DI library (like Google Guice). If you are starting from scratch or
-don't need this kind integration, then I would recommend to avoid JSR 330 annotations and use normal [binding DSL](#define-bindings).
-{% include cend.html %}
