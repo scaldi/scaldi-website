@@ -721,6 +721,13 @@ Alternatively you can use bindings that come out of the box:
 * `NonLazyBinding`
 * `ProviderBinding`
 
+Binding also provides two properties that are very useful when you consume bindings and need to be considered when you are creating a new one:
+
+* `isEager` - tell an injector whether this binding must be initialized during the initialization stage injector itself (an example of such binding is the [Non-Lazy Binding](#non-lazy-binding))
+* `isCacheable` - tells potential users whether this binding is allowed to be cached. Lazy, non-lazy binding can be cached since they are singletons,
+  provider bindings from the other hand can't be cached. Annotation binding can be both, so it will decide this based on scope. This property is used in
+  [Play integration](#play-integration), for example, to decide whether controller instance is allowed to be cached.
+
 ## Inject Bindings
 
 Scaldi provides nice DSL for the binding injection. In order to make it available, you need to either import from `Injectable`:
@@ -1181,6 +1188,11 @@ If you would like to use `configuration` instance directly, then you need inject
 {% highlight scala %}
 val config = inject [Configuration]
 {% endhighlight %}
+
+### Controller Cache
+
+`ScaldiSupport` caches all controllers provided by **scaldi-play** to ensure the fast controller-retrieval time. It also considered `isCacheable`
+property bindings, so it will not cache controllers that are bound with `toProvider` function.
 
 ## Akka Integration
 

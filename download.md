@@ -49,6 +49,11 @@ libraryDependencies += "org.scaldi" %% "scaldi-play" % "{{site.version.scaldi-pl
 scaldi-play has an [example project]({{site.link.scaldi-play-example-github}}) for you to play with.
 It also an activator template which you can find [here]({{site.link.scaldi-play-example-template}}).
 
+{% include ext.html type="info" title="Play 2.4.0" %}
+There is an on-going effort to support new DI mechanism of Play 2.4.0. It is still **experimental**, but if you would like to try it out
+in you own projects, then you can use **scaldi-play** version **{{site.version.scaldi-play-24}}** wich support play version **{{site.version.play-24}}**: `libraryDependencies += "org.scaldi" %% "scaldi-play" % "{{site.version.scaldi-play-24}}"`
+{% include cend.html %}
+
 ### scaldi-akka
 
 <dl class="dl-horizontal">

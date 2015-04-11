@@ -394,6 +394,12 @@ object Global extends GlobalSettings with ScaldiSupport {
 }
 {% endhighlight %}
         </p>
+        <p>An experimental support for <strong>Play 2.4.0</strong> is already in progress:</p>
+        <p>
+          {% highlight scala %}
+          libraryDependencies += "org.scaldi" %% "scaldi-play" % "{{site.version.scaldi-play-24}}"
+          {% endhighlight %}
+        </p>
         <p>For the akka applications, <span class="class-name">scaldi-akka</span> is the way to go:</p>
         <p>
 {% highlight scala %}
