@@ -9,8 +9,8 @@ domain: scaldi.org
 version:
   scaldi: 0.5.5
   scaldi-play: 0.5.5
-  scaldi-play-24: 0.5-play-2.4.0-RC1-9
-  play-24: 2.4.0-RC1
+  scaldi-play-24: 0.5-play-2.4.0-RC3-10
+  play-24: 2.4.0-RC3
   scaldi-akka: 0.5.5
 
 version-210:
