@@ -46,7 +46,7 @@ Other injectors have more specific role and serve as a wrapper for other injecto
 `PropertyInjector` or `PlayConfigurationInjector` are examples of such `Injector`s.
 `Injector` itself is used by the `inject` function (which takes an `Injector` as an implicit argument) to inject these bindings.
 
-From the other hand injectors have also another property - every injector can be either **mutable** or **immutable**. These two types are differ in the
+From the other hand injectors have also another property - every injector can be either **mutable** or **immutable**. These two types differ in the
 way [lifecycle](#injector-lifecycle) and [injector composition](#injector-composition) works. Next sections will describe it in more detail.
 
 This section describes the set of standard injectors. There are also other, more specialised, injectors available in other parts of this documentation:
