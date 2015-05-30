@@ -7,25 +7,23 @@ ga-code: UA-41090613-1
 domain: scaldi.org
 
 version:
-  scaldi: 0.5.5
-  scaldi-play: 0.5.5
-  scaldi-play-24: 0.5-play-2.4.0-RC3-10
-  play-24: 2.4.0-RC3
-  scaldi-akka: 0.5.5
-
-version-210:
-  scaldi: 0.3.2
-  scaldi-play: 0.3.3
-  scaldi-akka: 0.3.3
+  scaldi: 0.5.6
+  scaldi-jsr330: 0.5.6
+  scaldi-play: 0.5.6
+  scaldi-play-23: 0.5.6
+  scaldi-akka: 0.5.6
 
 link:
   scaldi-github: https://github.com/scaldi
   scaldi-maven: http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.scaldi%22
   scaldi-releases: https://github.com/scaldi/scaldi/releases
+  scaldi-jsr330-releases: https://github.com/scaldi/scaldi-jsr330/releases
   scaldi-play-releases: https://github.com/scaldi/scaldi-play/releases
   scaldi-akka-releases: https://github.com/scaldi/scaldi-akka/releases
   scaldi-play-example-github: https://github.com/scaldi/scaldi-play-example
+  scaldi-play-example-github-23: https://github.com/scaldi/scaldi-play-2.3-example
   scaldi-play-example-template: https://typesafe.com/activator/template/scaldi-play-example
+  scaldi-play-example-template-23: http://www.typesafe.com/activator/template/scaldi-play-23-example
   scaldi-play-example-blog: http://hacking-scala.org/post/51407241538/easy-dependency-injection-in-play-framework-with-scaldi
   scaldi-akka-example-github: https://github.com/scaldi/scaldi-akka-example
   scaldi-akka-example-template: https://typesafe.com/activator/template/scaldi-akka-example
@@ -43,14 +41,17 @@ link:
     scaldi-akka: http://scaldi.github.io/scaldi-akka/latest/api
   repo:
     scaldi: https://github.com/scaldi/scaldi
+    scaldi-jsr330: https://github.com/scaldi/scaldi-jsr330
     scaldi-play: https://github.com/scaldi/scaldi-play
     scaldi-akka: https://github.com/scaldi/scaldi-akka
   maven:
     scaldi: http://search.maven.org/#artifactdetails%7Corg.scaldi%7Cscaldi_
+    scaldi-jsr330: http://search.maven.org/#artifactdetails%7Corg.scaldi%7Cscaldi-jsr330_
     scaldi-play: http://search.maven.org/#artifactdetails%7Corg.scaldi%7Cscaldi-play_
     scaldi-akka: http://search.maven.org/#artifactdetails%7Corg.scaldi%7Cscaldi-akka_
   issues:
     scaldi: https://github.com/scaldi/scaldi/issues
+    scaldi-jsr330: https://github.com/scaldi/scaldi-jsr330/issues
     scaldi-play: https://github.com/scaldi/scaldi-play/issues
     scaldi-akka: https://github.com/scaldi/scaldi-akka/issues
   website: https://github.com/scaldi/scaldi-website
