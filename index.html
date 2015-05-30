@@ -119,15 +119,16 @@ class OfficialMessageService(implicit inj: Injector)
       </div>
       <div class="col-md-8">
         <h2>Play Integration</h2>
-        <p>Scaldi also comes with the play framework support. Start using scaldi in the play application is as simple as mixing-in <span class="class-name">ScaldiSupport</span> in the <span class="class-name">Global</span>:</p>
+        <p>Scaldi also comes with the play framework support. Start using scaldi in a play application is as simple as configuring application loader and modules in <span class="class-name">application.conf</span>:</p>
         <p>
 {% highlight scala %}
-object Global extends GlobalSettings with ScaldiSupport {
-  def applicationModule = new UserModule :: new AuthControllersModule
-}
+play.application.loader = scaldi.play.ScaldiApplicationLoader
+
+play.modules.enabled += "modules.MyModule"
+play.modules.enabled += "scaldi.play.ControllerInjector"
 {% endhighlight %}
         </p>
-        <p>From now on you can define your controllers as classes and not as global singletons ;)</p>
+        <p>Play now uses scaldi for dependency injection. From now on you can use scaldi to inject/bind bindings in your controllers as classes:</p>
         <p>
 {% highlight scala %}
 class Application(implicit inj: Injector) extends Controller with Injectable {
@@ -386,18 +387,19 @@ libraryDependencies += "org.scaldi" %% "scaldi" % "{{site.version.scaldi}}"
 libraryDependencies += "org.scaldi" %% "scaldi-play" % "{{site.version.scaldi-play}}"
 {% endhighlight %}
         </p>
-        <p>Then you can just extend <span class="class-name">ScaldiSupport</span> in the <span class="class-name">Global</span> like this:</p>
+        <p>Then you can just define application loader and your modules in the <span class="class-name">application.conf</span> like this:</p>
         <p>
 {% highlight scala %}
-object Global extends GlobalSettings with ScaldiSupport {
-  def applicationModule = new MyModule :: new SomeOtherModule
-}
+play.application.loader = scaldi.play.ScaldiApplicationLoader
+
+play.modules.enabled += "modules.MyModule"
+play.modules.enabled += "scaldi.play.ControllerInjector"
 {% endhighlight %}
         </p>
-        <p>An experimental support for <strong>Play 2.4.0</strong> is already in progress:</p>
+        <p><strong>Play 2.3.x</strong> is still supported, you just need to use <strong>scaldi-play-23</strong> instead:</p>
         <p>
           {% highlight scala %}
-          libraryDependencies += "org.scaldi" %% "scaldi-play" % "{{site.version.scaldi-play-24}}"
+          libraryDependencies += "org.scaldi" %% "scaldi-play-23" % "{{site.version.scaldi-play-23}}"
           {% endhighlight %}
         </p>
         <p>For the akka applications, <span class="class-name">scaldi-akka</span> is the way to go:</p>
@@ -406,11 +408,18 @@ object Global extends GlobalSettings with ScaldiSupport {
 libraryDependencies += "org.scaldi" %% "scaldi-akka" % "{{site.version.scaldi-akka}}"
 {% endhighlight %}
         </p>
+        <p>If you are integrating or migrating existing apps that use JSR 330 annotations, then <span class="class-name">scaldi-jsr330</span> is the right choice:</p>
+        <p>
+          {% highlight scala %}
+          libraryDependencies += "org.scaldi" %% "scaldi-jsr330" % "{{site.version.scaldi-jsr330}}"
+          {% endhighlight %}
+        </p>
         <br>
         <p>After the initial setup you can read <a href="{{"/learn" | prepend: site.baseurl}}">some documentation</a> or look at <a target="_blank" href="{{site.link.scaldi-presentation}}">scaldi presentation slides</a>.</p>
         <p>If you prefer more hands-on approach, then you may be interested in two example projects which you can play with:</p>
         <ul>
-          <li>Scaldi Play Example (<a target="_blank" href="{{site.link.scaldi-play-example-github}}">GitHub</a>, <a target="_blank" href="{{site.link.scaldi-play-example-blog}}">Blog</a>, <a target="_blank" href="{{site.link.scaldi-play-example-template}}">Typesafe activator template</a>)</li>
+          <li>Scaldi Play 2.4 Example (<a target="_blank" href="{{site.link.scaldi-play-example-github}}">GitHub</a>, <a target="_blank" href="{{site.link.scaldi-play-example-template}}">Typesafe activator template</a>)</li>
+          <li>Scaldi Play 2.3 Example (<a target="_blank" href="{{site.link.scaldi-play-example-github-23}}">GitHub</a>, <a target="_blank" href="{{site.link.scaldi-play-example-blog}}">Blog</a>, <a target="_blank" href="{{site.link.scaldi-play-example-template-23}}">Typesafe activator template</a>)</li>
           <li>Scaldi Akka Example (<a target="_blank" href="{{site.link.scaldi-akka-example-github}}">GitHub</a>, <a target="_blank" href="{{site.link.scaldi-akka-example-blog}}">Blog</a>, <a target="_blank" href="{{site.link.scaldi-akka-example-template}}">Typesafe activator template</a>)</li>
         </ul>
       </div>
