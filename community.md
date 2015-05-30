@@ -13,7 +13,7 @@ Your feedback and participation are very welcome!
 
 If you've got some interesting ideas for improvements or discovered some nasty bugs then feel free to use
 [Scaldi's issue tracker]({{site.link.issues.scaldi}})
-(there is also one for [scaldi-play]({{site.link.issues.scaldi-play}}) and [scaldi-akka]({{site.link.issues.scaldi-akka}})).
+(there is also one for [scaldi-play]({{site.link.issues.scaldi-play}}), [scaldi-akka]({{site.link.issues.scaldi-akka}}) and [scaldi-jsr330]({{site.link.issues.scaldi-jsr330}})).
 Also feel free to [fork project]({{site.link.scaldi-github}}) and create a pull requests - they would be highly appreciated!
 
 ### StackOverflow

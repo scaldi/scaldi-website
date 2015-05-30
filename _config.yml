@@ -39,6 +39,7 @@ link:
     scaldi: http://scaldi.github.io/scaldi/latest/api
     scaldi-play: http://scaldi.github.io/scaldi-play/latest/api/#scaldi.play.ScaldiSupport
     scaldi-akka: http://scaldi.github.io/scaldi-akka/latest/api
+    scaldi-jsr330: http://scaldi.github.io/scaldi-jsr330/latest/api
   repo:
     scaldi: https://github.com/scaldi/scaldi
     scaldi-jsr330: https://github.com/scaldi/scaldi-jsr330
