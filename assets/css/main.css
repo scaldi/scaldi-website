@@ -328,3 +328,7 @@ h3 a.link-link span {
 .bs-callout-ext h4 {
   color: #9BC585;
 }
+
+h4 {
+ margin-top: 20px;
+}

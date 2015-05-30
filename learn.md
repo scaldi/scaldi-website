@@ -1088,7 +1088,7 @@ libraryDependencies += "org.scaldi" %% "scaldi-play" % "{{site.version.scaldi-pl
 Dependency injection in Play heavily relies on `ApplicationLoader` trait. It's implementations are responsible to load and initialize
 your application:
 
-<img src="{{"/assets/img/pic.svg" | prepend: site.baseurl}}" title="ScaldiApplicationLoader" >
+<img src="{{"/assets/img/pic.svg" | prepend: site.baseurl}}" title="ScaldiApplicationLoader">
 
 
 **scaldi-play** provides `scaldi.play.ScaldiApplicationLoader` which you can use to tell Play that you want to use scaldi for
@@ -1098,10 +1098,10 @@ dependency injection in you application. You can do so in `conf/application.conf
 play.application.loader = scaldi.play.ScaldiApplicationLoader
 {% endhighlight %}
 
-Even though play also has `play.api.inject.Module`, just like scaldi, it nothing more that a container for binding definitions which it provides
-for the plugins and play core framework. Play itself will not instantiate or initialize these bindings - it's task for `ScaldiApplicationLoader`.
+Even though play also has `play.api.inject.Module`, just like scaldi, it nothing more than a container for binding definitions, which it collects
+from plugins and play core. Play itself will not instantiate or initialize these bindings - it's task for `ScaldiApplicationLoader`.
 After `ScaldiApplicationLoader` got these binding definitions from play, it's able to construct the `scaldi.Injector` from it, which knows how
-to initialize and wire all of the bindings for play core, plugins and your application.
+to initialize and wire all of the bindings from play core, plugins and your application.
 
 In order to provide you application modules to play application, you need to add them to the list of enabled modules in the `conf/application.conf` with
 `play.modules.enabled` property:
@@ -1114,7 +1114,7 @@ play.modules.enabled += "modules.SomeOtherModule"
 {% endhighlight %}
 
 `ScaldiApplicationLoader` understands both scaldi and play-specific modules and able to compose them in one final scaldi injection aggregation.
-That's because it able to not only load our scaldi modules, but also play plugins and play core bindings.
+That is the reason why it able to not only load our scaldi modules, but also play plugins and play core bindings.
 
 Now you can bind controllers as any other class in the Module. For example:
 
@@ -1149,11 +1149,38 @@ internal mechanisms for it.
 
 You can find a tutorial and an example play application in Scaldi Play 2.4 Example ([GitHub]({{site.link.scaldi-play-example-github}}), [Typesafe activator template]({{site.link.scaldi-play-example-template}})).
 
-{% include ext.html type="info" title="Note on plugin development" %}
+{% include ext.html type="info" title="Note for plugin developers" %}
 Since plugins in Play are normal modules,  it's tempting to define them as scaldi modules. I would encourage you to avoid using scaldi-specific
-modules in plugin itself. Ideally you need to provide `play.api.inject.Module` for your plugin and use JSR 330 annotations, so that other users
+modules in plugin itself. Ideally you need to provide `play.api.inject.Module` for your plugin and use JSR 330 annotations, so that users
 of your plugin have choice of DI library in their own applications.
 {% include cend.html %}
+
+### Play Application Lifecycle
+
+Since `ScaldiSupport` is now deprecated and you generally should avoid usage of `GlobalSettings`, you need to use [scaldi's own lifecycle](#injector-lifecycle) as a lifecycle
+of your application. So your application starts then `Injector` is initialized.
+
+If you need to eagerly initialize some bindings, then you can use [non-lazy bindings](#non-lazy-binding):
+
+{% highlight scala %}
+bind [Database] toNonLazy new Riak
+{% endhighlight %}
+
+
+If some additional code need to be executed when binding is initialized or destroyed, then I would recommend you to look at ["Binding Lifecycle" section](#binding-lifecycle):
+
+
+{% highlight scala %}
+bind [Server] to new HttpServer initWith (_.init()) destroyWith (_.shutdown())
+{% endhighlight %}
+
+Play itself provides a binding for `ApplicationLifecycle` class which you can inject use to add additional stop logic:
+
+{% highlight scala %}
+inject [ApplicationLifecycle] addStopHook { () =>
+  // destroy something
+}
+{% endhighlight %}
 
 ### Play-specific Injectors
 
@@ -1225,6 +1252,130 @@ If you wish to disable caching, then you can do so with `scaldi.controller.cache
 
 {% highlight scala %}
 scaldi.controller.cache = false
+{% endhighlight %}
+
+### Testing of Play Application
+
+Testing support comes in form of `scaldi.play.ScaldiApplicationBuilder` and `scaldi.play.ScaldiBuilder` classes and conceptually very similar to testing support
+described in [the official documentation](https://www.playframework.com/documentation/2.4.x/ScalaTestingWithGuice):
+
+{% highlight scala %}
+class TestModule extends Module {
+  bind [Database] to new InMemoryDatabase
+}
+
+val application = new ScaldiApplicationBuilder().prependModule(new TestModule).build()
+
+running(application) {
+  val home =  route(FakeRequest(GET, "/")).get
+
+  status(home) must equalTo(OK)
+}
+{% endhighlight %}
+
+`ScaldiApplicationBuilder` constructor has a lot of different arguments (with reasonable defaults) to customize different parts of your application.
+For example you can provide additional application modules, change configuration or even influence how configuration or modules are loaded.
+
+Instead of using `build()` method, which return you a Play `Application`, you can also use `buildInj()` which will return `scaldi.Injector`.
+This can be useful, if you would like to inject some bindings:
+
+{% highlight scala %}
+implicit val injector =
+  new ScaldiApplicationBuilder().prependModule(new TestModule).buildInj()
+
+val application = inject [Application]
+val db = inject [Database]
+{% endhighlight %}
+
+Companion object of `ScaldiApplicationBuilder` also has two helper methods: `withScaldiApp` and  `withScaldiInj`.
+They allow you to run test in the context of running application/injector:
+
+{% highlight scala %}
+withScaldiApp(modules = Seq(new TestModule)) {
+  val home =  route(FakeRequest(GET, "/")).get
+
+  status(home) must equalTo(OK)
+}
+
+withScaldiInj(modules = Seq(TestModule)) { implicit inj =>
+  inject[Database].getUsers() should be ('empty)
+}
+{% endhighlight %}
+
+Both of these allow you to provide bunch of arguments to customize a fake application, just like `ScaldiApplicationBuilder` itself.
+
+#### Additional Configuration
+
+Here is an example of different ways to provide additional configuration:
+
+{% highlight scala %}
+val application = new ScaldiApplicationBuilder(
+      configuration = Configuration("host" -> "localhost"))
+  .configure(Configuration("message" -> "Test"))
+  .configure(Map("host" -> "localhost", "port" -> 123))
+  .configure("width" -> 100, "height" -> 200)
+  .build()
+{% endhighlight %}
+
+As you can see, `ScaldiApplicationBuilder` also has builder methods for different aspects of application.
+
+If you wish, you can also override the configuration loading function:
+
+{% highlight scala %}
+val application = new ScaldiApplicationBuilder()
+  .loadConfig(env => Configuration.load(env))
+  .build()
+{% endhighlight %}
+
+#### Modules
+
+In order to provide application modules, `ScaldiApplicationBuilder` provides a constructor argument `modules` which would prepend provided modules to the
+final module composition. You can also use `prependModule(...)` and `appendModule(...)` for this. Prepended modules will have the highest priority
+during the binding lookup - it is very useful for test bindings since they will override bindings from other modules. Appended modules would
+be added to the end of a module composition. Please see ["Injector Composition" section](#injector-composition) for more details. Here is an example:
+
+{% highlight scala %}
+val application = new ScaldiApplicationBuilder(modules = Seq(new TestModule))
+  .appendModule(new AnotherModule)
+  .prependModule(new YetAnotherModule)
+  .build()
+{% endhighlight %}
+
+Sometimes you want to have complete control over the module composition. This means, that you would like to create composition
+from scratch and disable default module loading mechanism. You can do it with the help of `loadModules` argument:
+
+{% highlight scala %}
+val appModule = new TestModule :: new ServerModule :: new UserModule :: new ControllerInjector
+
+val application = new ScaldiApplicationBuilder(
+    modules = Seq(appModule, new EhCacheModule, new BuiltinModule),
+    loadModules = (_, _) => Seq.empty)
+  .build()
+{% endhighlight %}
+
+As you can see in this example, you also need to compose `BuiltinModule` of play and possibly plugin modules (like cache plugin in this case)
+in order to construct complete application. `loadModules = (_, _) => Seq.empty` in this case completely disables default module loading mechanism.
+
+#### Fake Router
+
+In some case you need to define some fake routes in the tests, it's something you was able to do with the `FakeApplication(withRoutes = ...)` before.
+**scaldi-play** provides `FakeRouterModule` for this purpose - it's just a `scaldi.Injector`, so you can add it to the module list of your test application.
+Here is an example of it's usage:
+
+{% highlight scala %}
+val fakeRotes = FakeRouterModule {
+  case ("GET", "/some-url") => Action {
+    Results.Ok("everything is fine")
+  }
+}
+
+val application = new ScaldiApplicationBuilder(modules = Seq(fakeRotes)).build()
+
+running(TestServer(3333, application), HTMLUNIT) { browser =>
+  browser.goTo("http://localhost:3333/some-url")
+
+  browser.pageSource must contain("everything is fine")
+}
 {% endhighlight %}
 
 ### Play 2.3.x Support
