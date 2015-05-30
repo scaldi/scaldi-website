@@ -14,7 +14,8 @@ If you would Like to get a quick overview of Scaldi, I would recommend you to lo
 look at the [main page]({{"/" | prepend: site.baseurl}}) which has some examples and [feature highlights]({{"/#feature-highlights" | prepend: site.baseurl}}).
 For more hands-on approach, you can check out two example projects which you can play with:
 
-* Scaldi Play Example ([GitHub]({{site.link.scaldi-play-example-github}}), [Blog]({{site.link.scaldi-play-example-blog}}), [Typesafe activator template]({{site.link.scaldi-play-example-template}}))
+* Scaldi Play 2.4 Example ([GitHub]({{site.link.scaldi-play-example-github}}), [Typesafe activator template]({{site.link.scaldi-play-example-template}}))
+* Scaldi Play 2.3 Example ([GitHub]({{site.link.scaldi-play-example-github-23}}), [Blog]({{site.link.scaldi-play-example-blog}}), [Typesafe activator template]({{site.link.scaldi-play-example-template-23}}))
 * Scaldi Akka Example ([GitHub]({{site.link.scaldi-akka-example-github}}), [Blog]({{site.link.scaldi-akka-example-blog}}), [Typesafe activator template]({{site.link.scaldi-akka-example-template}}))
 
 Activator templates also contain tutorials which show Scaldi basics and also the ways you can integrate in play/akka application.
@@ -1084,16 +1085,36 @@ To add a Scaldi support in the play application you need to include `scaldi-play
 libraryDependencies += "org.scaldi" %% "scaldi-play" % "{{site.version.scaldi-play}}"
 {% endhighlight %}
 
-After this you would be able to mix-in `ScaldiSupport` trait in the `Global` object:
+Dependency injection in Play heavily relies on `ApplicationLoader` trait. It's implementations are responsible to load and initialize
+your application:
+
+<img src="{{"/assets/img/pic.svg" | prepend: site.baseurl}}" title="ScaldiApplicationLoader" >
+
+
+**scaldi-play** provides `scaldi.play.ScaldiApplicationLoader` which you can use to tell Play that you want to use scaldi for
+dependency injection in you application. You can do so in `conf/application.conf`:
 
 {% highlight scala %}
-object Global extends GlobalSettings with ScaldiSupport {
-  def applicationModule = new WebModule :: new UserModule
-}
+play.application.loader = scaldi.play.ScaldiApplicationLoader
 {% endhighlight %}
 
-As you can see, you also need to implement `applicationModule` method. By doing this you tell play which Injector should be used
-to lookup the controller instances. This is also a good place to compose the main injector for your Play application.
+Even though play also has `play.api.inject.Module`, just like scaldi, it nothing more that a container for binding definitions which it provides
+for the plugins and play core framework. Play itself will not instantiate or initialize these bindings - it's task for `ScaldiApplicationLoader`.
+After `ScaldiApplicationLoader` got these binding definitions from play, it's able to construct the `scaldi.Injector` from it, which knows how
+to initialize and wire all of the bindings for play core, plugins and your application.
+
+In order to provide you application modules to play application, you need to add them to the list of enabled modules in the `conf/application.conf` with
+`play.modules.enabled` property:
+
+{% highlight scala %}
+play.application.loader = scaldi.play.ScaldiApplicationLoader
+
+play.modules.enabled += "modules.MyModule"
+play.modules.enabled += "modules.SomeOtherModule"
+{% endhighlight %}
+
+`ScaldiApplicationLoader` understands both scaldi and play-specific modules and able to compose them in one final scaldi injection aggregation.
+That's because it able to not only load our scaldi modules, but also play plugins and play core bindings.
 
 Now you can bind controllers as any other class in the Module. For example:
 
@@ -1116,7 +1137,7 @@ class WebModule extends Module {
 It's not much different from the way you are using Scaldi outside of the play application. Nice thing about it
 is that you no longer need to make `Controller` a global singleton `object`, but instead it can be a plain `class`.
 
-One omportant thing that you now need to do is to prefix the controller class in the **conf/routes** file with `@`.
+One important thing that you now need to do is to prefix the controller class in the **conf/routes** file with `@`.
 There is an example of how you can define a route for the `Application` controller:
 
 {% highlight scala %}
@@ -1126,17 +1147,23 @@ GET  /                 @controllers.Application.index
 By doing this, you are telling Play to use Scaldi to resolve the controller instance instead of trying to use it's own
 internal mechanisms for it.
 
-You can find a tutorial and an example play application in Scaldi Play Example ([GitHub]({{site.link.scaldi-play-example-github}}), [Blog]({{site.link.scaldi-play-example-blog}}), [Typesafe activator template]({{site.link.scaldi-play-example-template}})).
+You can find a tutorial and an example play application in Scaldi Play 2.4 Example ([GitHub]({{site.link.scaldi-play-example-github}}), [Typesafe activator template]({{site.link.scaldi-play-example-template}})).
+
+{% include ext.html type="info" title="Note on plugin development" %}
+Since plugins in Play are normal modules,  it's tempting to define them as scaldi modules. I would encourage you to avoid using scaldi-specific
+modules in plugin itself. Ideally you need to provide `play.api.inject.Module` for your plugin and use JSR 330 annotations, so that other users
+of your plugin have choice of DI library in their own applications.
+{% include cend.html %}
 
 ### Play-specific Injectors
 
-Within a Play application you can add `ControllerInjector` which will create controller bindings on the fly, which means, that you don't need to
+Within a Play application you can add `scaldi.play.ControllerInjector` which will create controller bindings on the fly, which means, that you don't need to
 create then explicitly by yourself:
 
 {% highlight scala %}
-object Global extends GlobalSettings with ScaldiSupport {
-  def applicationModule = new UserModule :: new DbModule :: new ControllerInjector
-}
+play.application.loader = scaldi.play.ScaldiApplicationLoader
+
+play.modules.enabled += "scaldi.play.ControllerInjector"
 {% endhighlight %}
 
 Controller class should meet following requirements to be available for the `ControllerInjector`:
@@ -1146,7 +1173,7 @@ Controller class should meet following requirements to be available for the `Con
 
 ### Play-specific Bindings
 
-Play support also makes following bindings automatically available for you to inject:
+Play support also makes following bindings automatically available for you to inject (as well as any other play-specific bindings, like `Routes` or `ApplicationLifecycle`):
 
 * `Application` - the Play `Application` in which injector lives
 * `Mode` - the mode of the Play `Application`
@@ -1191,8 +1218,34 @@ val config = inject [Configuration]
 
 ### Controller Cache
 
-`ScaldiSupport` caches all controllers provided by **scaldi-play** to ensure the fast controller-retrieval time. It also considered `isCacheable`
+`scaldi-play` caches all controllers to ensure the fast controller retrieval times. It also considers `isCacheable`
 property bindings, so it will not cache controllers that are bound with `toProvider` function.
+
+If you wish to disable caching, then you can do so with `scaldi.controller.cache` property in `conf/application.conf`:
+
+{% highlight scala %}
+scaldi.controller.cache = false
+{% endhighlight %}
+
+### Play 2.3.x Support
+
+Play 2.3.x is still actively supported. In order to use scaldi in Play 2.3.x project, you need to use different dependency:
+
+{% highlight scala %}
+libraryDependencies += "org.scaldi" %% "scaldi-play-23" % "{{site.version.scaldi-play-23}}"
+{% endhighlight %}
+
+Older play versions had very limited support for dependency injection, so main integration point was `GlobalSettings` trait.
+You need to mix-in `ScaldiSupport` trait in the `Global` object to be able to provide your applications's modules:
+
+{% highlight scala %}
+object Global extends GlobalSettings with ScaldiSupport {
+  def applicationModule = new WebModule :: new UserModule
+}
+{% endhighlight %}
+
+As you can see, you also need to implement `applicationModule` method. By doing this you tell play which Injector should be used
+to lookup the controller instances. This is also a good place to compose the main injector for your Play application.
 
 ## Akka Integration
 
@@ -1302,6 +1355,12 @@ don't need this kind integration, then I would recommend to avoid JSR 330 annota
 Scaldi implements [JSR 330 (Dependency Injection for Java)](https://jcp.org/en/jsr/detail?id=330) spec. This allows you to bind
 JSR 330 annotated classes and inject scaldi bindings from them. From the optional part of JSR 330 spec, only private member injection is
 supported (which means that static injection is not supported).
+
+To add JSR 330 support, you need to add one extra library dependency in your project:
+
+{% highlight scala %}
+libraryDependencies += "org.scaldi" %% "scaldi-jsr330" % "{{site.version.scaldi-jsr330}}"
+{% endhighlight %}
 
 In order to bind JSR 330 annotated class you can use `annotated` syntax when you are defining a binding (all JSR 330 support resides in the
 `scaldi.jsr330` package):
