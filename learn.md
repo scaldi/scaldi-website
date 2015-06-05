@@ -501,7 +501,7 @@ bind [Server] identifiedBy 'real and 'http to
   HttpServer(inject [String] ('httpHost))
 {% endhighlight %}
 
-As you can see, `Symbol`s are also treated as string identifiers. In this case biding gets these 3 identifiers:
+As you can see, `Symbol`s are also treated as string identifiers. In this case binding gets these 3 identifiers:
 
 * `TypeTagIdentifier(typeOf[Server])`
 * `StringIdentifier("real")`
@@ -565,7 +565,7 @@ val dangerousDb = inject [DB] ('experimental) // ExperimentalDb
 
 ## Define Bindings
 
-Scaldi provides a biding DSL which you can you can use inside of the `Module`. Here is an example of how you can create the bindings:
+Scaldi provides a binding DSL which you can you can use inside of the `Module`. Here is an example of how you can create the bindings:
 
 {% highlight scala %}
 class AppModule extends Module {
