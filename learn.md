@@ -1109,8 +1109,8 @@ In order to provide you application modules to play application, you need to add
 {% highlight scala %}
 play.application.loader = scaldi.play.ScaldiApplicationLoader
 
-play.modules.enabled += "modules.MyModule"
-play.modules.enabled += "modules.SomeOtherModule"
+play.modules.enabled += modules.MyModule
+play.modules.enabled += modules.SomeOtherModule
 {% endhighlight %}
 
 `ScaldiApplicationLoader` understands both scaldi and play-specific modules and able to compose them in one final scaldi injection aggregation.
@@ -1146,6 +1146,12 @@ GET  /                 @controllers.Application.index
 
 By doing this, you are telling Play to use Scaldi to resolve the controller instance instead of trying to use it's own
 internal mechanisms for it.
+
+Please note, that if you are using `InjectedRoutesGenerator`, then you don't need to prefix your controllers with `@` in the **conf/routes** file:
+
+{% highlight scala %}
+routesGenerator := InjectedRoutesGenerator
+{% endhighlight %}
 
 You can find a tutorial and an example play application in Scaldi Play 2.4 Example ([GitHub]({{site.link.scaldi-play-example-github}}), [Typesafe activator template]({{site.link.scaldi-play-example-template}})).
 
@@ -1184,19 +1190,19 @@ inject [ApplicationLifecycle] addStopHook { () =>
 
 ### Play-specific Injectors
 
-Within a Play application you can add `scaldi.play.ControllerInjector` which will create controller bindings on the fly, which means, that you don't need to
+Within a Play application you can add `scaldi.play.ControllerInjector` which will create controller bindings on the fly, which means that you don't need to
 create then explicitly by yourself:
 
 {% highlight scala %}
 play.application.loader = scaldi.play.ScaldiApplicationLoader
 
-play.modules.enabled += "scaldi.play.ControllerInjector"
+play.modules.enabled += scaldi.play.ControllerInjector
 {% endhighlight %}
 
 Controller class should meet following requirements to be available for the `ControllerInjector`:
 
 * It should extend `play.api.mvc.Controller`
-* It should have no-argument constructor or a constructor that takes and implicit `Injector` as an argument
+* It should have constructor that takes and implicit `Injector` as an argument
 
 ### Play-specific Bindings
 

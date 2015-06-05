@@ -124,8 +124,8 @@ class OfficialMessageService(implicit inj: Injector)
 {% highlight scala %}
 play.application.loader = scaldi.play.ScaldiApplicationLoader
 
-play.modules.enabled += "modules.MyModule"
-play.modules.enabled += "scaldi.play.ControllerInjector"
+play.modules.enabled += modules.MyModule
+play.modules.enabled += scaldi.play.ControllerInjector
 {% endhighlight %}
         </p>
         <p>Play now uses scaldi for dependency injection. From now on you can use scaldi to inject/bind bindings in your controllers as classes:</p>
