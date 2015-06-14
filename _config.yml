@@ -8,8 +8,8 @@ domain: scaldi.org
 
 version:
   scaldi: 0.5.6
-  scaldi-jsr330: 0.5.6
-  scaldi-play: 0.5.7
+  scaldi-jsr330: 0.5.7
+  scaldi-play: 0.5.8
   scaldi-play-23: 0.5.6
   scaldi-akka: 0.5.6
 
