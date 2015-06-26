@@ -43,11 +43,11 @@ trait Injector {
 
 Out of the box Scaldi comes with several different types of `Injector`s. Most of the implementations contain the actual bindings and
 provide a DSL to define them (e.g. `Module`, `PropertyInjector`).
-Other injectors have more specific role and serve as a wrapper for other injectors or as an integration point between Scaldi and other libraries.
+Other injectors have a more specific role and serve as a wrapper for other injectors or as an integration point between Scaldi and other libraries.
 `PropertyInjector` or `PlayConfigurationInjector` are examples of such `Injector`s.
 `Injector` itself is used by the `inject` function (which takes an `Injector` as an implicit argument) to inject these bindings.
 
-From the other hand injectors have also another property - every injector can be either **mutable** or **immutable**. These two types differ in the
+On the other hand injectors also have another property - every injector can be either **mutable** or **immutable**. These two types differ in the
 way [lifecycle](#injector-lifecycle) and [injector composition](#injector-composition) works. Next sections will describe it in more detail.
 
 This section describes the set of standard injectors. There are also other, more specialised, injectors available in other parts of this documentation:
@@ -74,7 +74,7 @@ injector.initNonLazy()
 
 In this example after the `initNonLazy` method is called, a new instance of `Server` class is created.
 
-After injector is initialized, it becomes frozen, so `initNonLazy` (which is also used internally) is idempotent.
+After injector is initialized, it is frozen, so `initNonLazy` (which is also used internally) is idempotent.
 
 Injector lifecycle also has a shutdown phase during which all binding that defined `destroyWith` function would be destroyed.
 All built-in mutable injectors are using `ShutdownHookLifecycleManager` which means that injector would be destroyed during the JVM
@@ -94,10 +94,10 @@ injector.destroy()
 def destroy(errorHandler: Throwable => Boolean = IgnoringErrorHandler): Unit
 {% endhighlight %}
 
-As you can see, it also allows you to provide an error handler that would be called if some exception happens during the
+As you can see, it also allows you to provide an error handler that would be called if some exception occurs during the
 destruction of one of the bindings. The default `IgnoringErrorHandler` just prints the stack trace and continues the shutdown procedure.
 
-If error handler returns `true`, then and exception will not stop the shutdown procedure, otherwise then it
+If error handler returns `true`, then an exception will not stop the shutdown procedure, otherwise it
 would be stopped.
 
 ### Module
@@ -174,12 +174,12 @@ val module = new StaticModule {
 
 The resulting bindings have 2 [identifiers](#identifiers):
 
-* String identifier which is the name if the class member (e.g. `tcpHost`, `otherServer`, etc.)
+* String identifier which is the name of the class member (e.g. `tcpHost`, `otherServer`, etc.)
 * Class identifier which is the return type of the `def` or the type of `val`
 
-In some cases this can be pretty restrictive, because your bindings can't have have more identifiers or conditions associated with them.
+In some cases this can be pretty restrictive, because your bindings can't have more identifiers or conditions associated with them.
 To provide more flexibility Scaldi also allows you to return a `BindingProvider` from the member of the class instead of a regular type.
-Here is how it looks like:
+Here is how it looks:
 
 {% highlight scala %}
 trait BindingProvider {
@@ -191,7 +191,7 @@ So `BindingProvider` gives you the complete control over the resulting binding.
 
 ### Property Injector
 
-All property injectors are immutable and allow you to add binding from a property file or `Properties` class. Here is a small example how
+All property injectors are immutable and allow you to add binding from a property file or `Properties` class. Here is a small example showing you how
 you can use it:
 
 {% highlight scala %}
@@ -215,7 +215,7 @@ Injectable.inject[Server] should equal (HttpServer("test-prop", 54321))
 {% endhighlight %}
 
 All properties are available as bindings and each property has only one string identifier and it's the name of the property.
-The type of the binding is defined on the inject side. You can inject following types:
+The type of the binding is defined on the inject side. You can inject the following types:
 
 * `String`
 * `Int`
@@ -240,8 +240,8 @@ class PlayConfigurationInjector(app: => Application) extends RawInjector {
 ### Typesafe Config Injector
 
 [Typesafe config](https://github.com/typesafehub/config) is natively supported via `TypesafeConfigInjector`.
-It is immutable injector and allow you to add bindings from a typesafe config. It is vary similar to `PropertiesInjector`
-but it supports much more different property types (generally it supports all property types supported by typesafe config itself):
+It is an immutable injector and allows you to add bindings from a typesafe config. It is very similar to `PropertiesInjector`
+but it supports many more different property types (generally it supports all property types supported by the typesafe config itself):
 
 * `Int`
 * `List[Int]`
@@ -286,7 +286,7 @@ val mainInjector = new ApplicationModule ++ new DatabaseModule
 
 Now when you `inject` bindings from the `mainInjector` it will lookup bindings from both injectors:
 `ApplicationModule` and `DatabaseModule`. **The order of the injectors is important.** So the binding lookup would
-happen from left to right. This means if `ApplicationModule` and `DatabaseModule` both have a binding with the same identifiers, than one from
+happen from left to right. This means if `ApplicationModule` and `DatabaseModule` both have a binding with the same identifiers, then one from
 the `ApplicationModule` wins and would be injected. You can find more information about binding
 overrides [in the correspondent section](#binding-overrides).
 
@@ -313,13 +313,13 @@ the `CanCompose` type class):
 * immutable injector + mutable injector = mutable injector aggregation
 
 There is also another special type of the injector which is called `NilInjector`. It does not contain any bindings and
-completely ignored during the composition. It can be useful if you want to conditionally compose some injector in one expression:
+is completely ignored during the composition. It can be useful if you want to conditionally compose some injector in one expression:
 
 {% highlight scala %}
 val inj = new AModule :: (if (someCondition) new BModule else NilInjector) :: new CModule
 {% endhighlight %}
 
-Mutability in terms of injector composition means 2 things. First it means, that when aggregation is initialized or destroyed, then
+Mutability in terms of injector composition means two things. First it means, that when aggregation is initialized or destroyed, then
 it will also recursively initialize or destroy all of it's mutable children. So in this example:
 
 {% highlight scala %}
@@ -334,8 +334,8 @@ only `SomeMutableInjector` would be influenced. `SomeImmutableInjector` is not t
 
 Mutability also changes the way binding lookup is done within a module. Every concrete injector like `Module` or `StaticModule`
 has an implicit injector instance in scope when you are defining the bindings. That's because you are able to inject binding within
-a `Module`, for example, or you are able to create new instances of classes that take and implicit instance of `Injector` as a constructor
-argument. But this implicit injector instance is different in mutable and immutable injectors. It would easier to explain it small example:
+a `Module`, for example, or you are able to create new instances of classes that take an implicit instance of `Injector` as a constructor
+argument. But this implicit injector instance is different in mutable and immutable injectors. It would be easier to explain it with a small example:
 
 {% highlight scala %}
 val dbModule = new Module {
@@ -369,14 +369,14 @@ Scaldi does not provide any support for the scopes out of the box. More often th
 with some other library that you are working with in you project, like web framework. So scaldi stays unopinionated in this
 respect, which allows you to use Scaldi with any library or framework of your choice.
 
-From the other hand, you can easily achieve very similar behaviour just by using abstractions that Scaldi provides out of the box.
+On the other hand, you can easily achieve very similar behaviour just by using abstractions that Scaldi provides out of the box.
 Here I would like to show you a small example of how you can define a scoped bindings and isolate them from the rest of the bindings
 by creating some kind of a sandbox for them.
 
 `ImmutableWrapper` is very simple implementation of an injector that just delegates the binding lookup to some other injector that is provided
 to it as an argument. The important thing to notice here is that `ImmutableWrapper` is an `ImmutableInjector`. This means that it
 will guard `delegate` from any lifecycle of the parent composition, if it gets composed with another injector. It also will know nothing about
-the final composition, because it is immutable, so it only able to contribute it's bindings to the composition, but not aware of it at all.
+the final composition, because it is immutable, so it is only able to contribute it's bindings to the composition, but not aware of it at all.
 
 Now lets use it:
 
