@@ -666,7 +666,7 @@ Provider bindings are defined with the `toProvider` word:
 bind [Client] toProvider new HttpClient
 {% endhighlight %}
 
-A new instance is created **each time** the binding is injected. This means that each time you inject the binging, you get a new instance.
+A new instance is created **each time** the binding is injected. This means that each time you inject the binding, you get a new instance.
 
 ### Binding Lifecycle
 
@@ -1422,7 +1422,7 @@ where `ActorRef` factory can be one of two things:
 * `ActorContext` - it always implicitly available within an `Actor` and can be used to create a new actors in the context of current actor
 * `ActorSystem`
 
-Here is a small example of how you can use `AkkaInjectable` to inject (which actually means create in case of actors) another actor:
+Here is a small example of how you can use `AkkaInjectable` to inject (which actually means create in the case of actors) another actor:
 
 {% highlight scala %}
 class Receptionist (implicit inj: Injector) extends Actor with AkkaInjectable {
@@ -1467,17 +1467,17 @@ class OrderModule extends Module {
 {% endhighlight %}
 
 I would like to point out how `Actor` are bound. It is important, that you bind them with `toProvider` function.
-It will make sure, that Scaldi always creates new instances of the `Actor` classes when you injecting them
+It will make sure that Scaldi always creates new instances of the `Actor` classes when you injecting them
 with `injectActorRef` or `injectActorProps`. These two methods actually use Akka mechanisms to configure an actor
 instance under-the-hood, but the actor instance creation itself is always delegated to Scaldi.
 During this process, Akka requires a delegate to always create new instances of an actor, so by binding `Actor`s
 with `toProvider` you are fulfilling the protocol, that Akka implies.
 
-You can find a tutorial and an example akka application in Scaldi Akka Example ([GitHub]({{site.link.scaldi-akka-example-github}}), [Blog]({{site.link.scaldi-akka-example-blog}}), [Typesafe activator template]({{site.link.scaldi-akka-example-template}})).
+You can find a tutorial and an example Akka application in Scaldi Akka Example ([GitHub]({{site.link.scaldi-akka-example-github}}), [Blog]({{site.link.scaldi-akka-example-blog}}), [Typesafe activator template]({{site.link.scaldi-akka-example-template}})).
 
 ### Singleton Actors
 
-In some cases you may want to create a singleton actors - they will be created and bond once and then injected in other actors that want to work with them.
+In some cases you may want to create a singleton actors - they will be created and bound once and then injected in other actors that want to work with them.
 
 Generally I would recommend to create actors within another actors and then send references around to propagate them to all places that
 want to use this actor ref, because in most cases you also need to take care of proper actor supervision hierarchy.
