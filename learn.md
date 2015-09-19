@@ -619,7 +619,7 @@ during the injection. More information about this feature can be found in the ["
 
 ### Binding Overrides
 
-You can define several bindings for the same set of identifiers. During the binding lookup (when you injecting them) the latest
+You can define several bindings for the same set of identifiers. During the binding lookup (when you inject them) the latest
 one would be used. You can also un-define the binding by defining the new binding to `None`. Here is an example:
 
 {% highlight scala %}
@@ -1467,7 +1467,7 @@ class OrderModule extends Module {
 {% endhighlight %}
 
 I would like to point out how `Actor` are bound. It is important, that you bind them with `toProvider` function.
-It will make sure that Scaldi always creates new instances of the `Actor` classes when you injecting them
+It will make sure that Scaldi always creates new instances of the `Actor` classes when you inject them
 with `injectActorRef` or `injectActorProps`. These two methods actually use Akka mechanisms to configure an actor
 instance under-the-hood, but the actor instance creation itself is always delegated to Scaldi.
 During this process, Akka requires a delegate to always create new instances of an actor, so by binding `Actor`s
