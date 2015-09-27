@@ -12,7 +12,7 @@ for binding dependencies and injecting them.
 
 If you would Like to get a quick overview of Scaldi, I would recommend you to look at [scaldi presentation slides]({{site.link.scaldi-presentation}}) or
 look at the [main page]({{"/" | prepend: site.baseurl}}) which has some examples and [feature highlights]({{"/#feature-highlights" | prepend: site.baseurl}}).
-For more hands-on approach, you can check out two example projects which you can play with:
+For more hands-on approach, you can check out some example projects which you can play with:
 
 * Scaldi Play 2.4 Example ([GitHub]({{site.link.scaldi-play-example-github}}), [Typesafe activator template]({{site.link.scaldi-play-example-template}}))
 * Scaldi Play 2.3 Example ([GitHub]({{site.link.scaldi-play-example-github-23}}), [Blog]({{site.link.scaldi-play-example-blog}}), [Typesafe activator template]({{site.link.scaldi-play-example-template-23}}))
@@ -58,7 +58,7 @@ This section describes the set of standard injectors. There are also other, more
 ### Injector Lifecycle
 
 Immutable injectors don't have any lifecycle associated with them.
-Mutable injectors, from the other hand, have an initialization and shutdown lifecycle phases.
+Mutable injectors, on the other hand, have an initialization and shutdown lifecycle phases.
 Initialization of an injector means that all non-lazy bindings are initialized.
 
 Generally the initialization of `Injector` happens automatically as soon as you inject from it for the first time.
@@ -66,7 +66,7 @@ But you can also force it by calling `initNonLazy()` method:
 
 {% highlight scala %}
 val injector = new Module {
-  bind [Server] as toNonLazy new Server
+  bind [Server] toNonLazy new Server
 }
 
 injector.initNonLazy()
@@ -619,7 +619,7 @@ during the injection. More information about this feature can be found in the ["
 
 ### Binding Overrides
 
-You can define several bindings for the same set of identifiers. During the binding lookup (when you injecting them) the latest
+You can define several bindings for the same set of identifiers. During the binding lookup (when you inject them) the latest
 one would be used. You can also un-define the binding by defining the new binding to `None`. Here is an example:
 
 {% highlight scala %}
@@ -644,7 +644,7 @@ Lazy bindings are defined with the `to` word:
 bind [UserService] to new UserService
 {% endhighlight %}
 
-The instance would be created **only once** as soon as as the binding is injected for the first time. All consequent
+The instance would be created **only once** as soon as the binding is injected for the first time. All consequent
 injects inject the instance that was created first time.
 
 ### Non-Lazy Binding
@@ -666,7 +666,7 @@ Provider bindings are defined with the `toProvider` word:
 bind [Client] toProvider new HttpClient
 {% endhighlight %}
 
-A new instance is created **each time** the binding is injected. This means that each time you inject the binging, you get a new instance.
+A new instance is created **each time** the binding is injected. This means that each time you inject the binding, you get a new instance.
 
 ### Binding Lifecycle
 
@@ -726,7 +726,7 @@ Binding also provides two properties that are very useful when you consume bindi
 
 * `isEager` - tell an injector whether this binding must be initialized during the initialization stage injector itself (an example of such binding is the [Non-Lazy Binding](#non-lazy-binding))
 * `isCacheable` - tells potential users whether this binding is allowed to be cached. Lazy, non-lazy binding can be cached since they are singletons,
-  provider bindings from the other hand can't be cached. Annotation binding can be both, so it will decide this based on scope. This property is used in
+  provider bindings on the other hand can't be cached. Annotation binding can be both, so it will decide this based on scope. This property is used in
   [Play integration](#play-integration), for example, to decide whether controller instance is allowed to be cached.
 
 ## Inject Bindings
@@ -751,7 +751,7 @@ Here is an example of how you can inject a binding:
 val db = inject [Database] (identified by 'remote is by default defaultDb)
 {% endhighlight %}
 
-All forms of inject expect and implicit instance of `Injector` to be in scope.
+All forms of inject expect an implicit instance of `Injector` to be in scope.
 If you are injecting in the module definition, then it already provides one for you. If you
 are injecting in you own classes, then the best approach would be to provide the implicit injector
 instance as a constructor argument, as shown in the example above.
@@ -759,7 +759,7 @@ instance as a constructor argument, as shown in the example above.
 ### Inject Single Binding
 
 To inject a single binding you need to use `inject` method. It takes a type parameter, which is the type of the binding and
-would treated as a `TypeTagIdentifier`. You can also provide additional biding identifiers using `identified by` and separate
+would treated as a `TypeTagIdentifier`. You can also provide additional binding identifiers using `identified by` and separate
 identifiers with `and` word:
 
 {% highlight scala %}
@@ -978,7 +978,7 @@ This approach definitely removes some of the boilerplate, but also couples UserS
 
 I think in most cases it's the matter of your personal/your teams preference which approach to take. Each of them has a trade-off
 to make, but in many cases the constructor injection approach is the most clean one, even though it requires a little bit more
-ceremony, so I you recommend you to use it. But every application is different, so you need to decide it for yourself,
+ceremony, so I recommend you to use it. But every application is different, so you need to decide it for yourself,
 taking you team and the nature of the project into the consideration.
 
 ## Conditions
@@ -1422,7 +1422,7 @@ where `ActorRef` factory can be one of two things:
 * `ActorContext` - it always implicitly available within an `Actor` and can be used to create a new actors in the context of current actor
 * `ActorSystem`
 
-Here is a small example of how you can use `AkkaInjectable` to inject (which actually means create in case of actors) another actor:
+Here is a small example of how you can use `AkkaInjectable` to inject (which actually means create in the case of actors) another actor:
 
 {% highlight scala %}
 class Receptionist (implicit inj: Injector) extends Actor with AkkaInjectable {
@@ -1467,17 +1467,17 @@ class OrderModule extends Module {
 {% endhighlight %}
 
 I would like to point out how `Actor` are bound. It is important, that you bind them with `toProvider` function.
-It will make sure, that Scaldi always creates new instances of the `Actor` classes when you injecting them
+It will make sure that Scaldi always creates new instances of the `Actor` classes when you inject them
 with `injectActorRef` or `injectActorProps`. These two methods actually use Akka mechanisms to configure an actor
 instance under-the-hood, but the actor instance creation itself is always delegated to Scaldi.
 During this process, Akka requires a delegate to always create new instances of an actor, so by binding `Actor`s
 with `toProvider` you are fulfilling the protocol, that Akka implies.
 
-You can find a tutorial and an example akka application in Scaldi Akka Example ([GitHub]({{site.link.scaldi-akka-example-github}}), [Blog]({{site.link.scaldi-akka-example-blog}}), [Typesafe activator template]({{site.link.scaldi-akka-example-template}})).
+You can find a tutorial and an example Akka application in Scaldi Akka Example ([GitHub]({{site.link.scaldi-akka-example-github}}), [Blog]({{site.link.scaldi-akka-example-blog}}), [Typesafe activator template]({{site.link.scaldi-akka-example-template}})).
 
 ### Singleton Actors
 
-In some cases you may want to create a singleton actors - they will be created and bond once and then injected in other actors that want to work with them.
+In some cases you may want to create a singleton actors - they will be created and bound once and then injected in other actors that want to work with them.
 
 Generally I would recommend to create actors within another actors and then send references around to propagate them to all places that
 want to use this actor ref, because in most cases you also need to take care of proper actor supervision hierarchy.
