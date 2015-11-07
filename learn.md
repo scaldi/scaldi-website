@@ -837,7 +837,7 @@ val db = inject [Database] (identified by 'remote and by default new Riak)
 {% endhighlight %}
 
 {% include ext.html type="info" title="Use defaults with caution" %}
-Event though default values can be useful in some circumstances, I would recommend you to avoid them in
+Even though default values can be useful in some circumstances, I would recommend you to avoid them in
 most cases. Scaldi provides a lot of tools to help you in this respect. For example you can extract all of your defaults in
 one/several modules and then compose them with the rest of the application modules. By doing this you
 will make sure, that defaults are defined only once.
