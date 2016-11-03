@@ -7,11 +7,11 @@ ga-code: UA-41090613-1
 domain: scaldi.org
 
 version:
-  scaldi: 0.5.7
-  scaldi-jsr330: 0.5.8
+  scaldi: 0.5.8
+  scaldi-jsr330: 0.5.9
   scaldi-play: 0.5.15
   scaldi-play-23: 0.5.6
-  scaldi-akka: 0.5.7
+  scaldi-akka: 0.5.8
 
 link:
   scaldi-github: https://github.com/scaldi
